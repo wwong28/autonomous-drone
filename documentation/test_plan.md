@@ -1,0 +1,179 @@
+# Autonomous Drone – Firmware Connectivity Test Plan
+
+## 1. Purpose
+
+This document defines the initial connectivity and reliability test plan for the ESP32-C3 firmware.
+The goal of this phase is to validate communication stability before implementing command/control logic or motor integration.
+
+This test plan focuses on:
+
+- BLE connectivity
+- WiFi SoftAP connectivity
+- Basic reliability (reconnect + stability)
+
+---
+
+## 2. Test Environment
+
+### Hardware
+- ESP32-C3 Development Board
+- USB connection to laptop (for serial monitor)
+
+### Software
+- ESP-IDF Version: v5.5-dev-3062-ge9bdd39599 (dirty)
+- Firmware Branch: main
+- iPhone Model: iPhone 15 Pro
+- iOS Version: 18.6.2
+
+### Tools
+- Serial Monitor (`idf.py monitor`)
+- iPhone app called nRF connect for ble connection
+- iPhone WiFi Settings
+
+---
+
+## 3. Test Cases
+
+---
+
+### BLE-01 — BLE Scan + Connect
+
+**Purpose:**
+Verify that the ESP32 advertises correctly and accepts connections.
+
+**Setup:**
+- Flash `drone_ble`
+- Reset board
+- Open serial monitor
+
+**Steps:**
+1. On iPhone, open nRF connect.
+2. Scan for BLE devices.
+3. Verify device name appears.
+4. Connect to device.
+
+**Pass Criteria:**
+- Device appears within 10 seconds.
+- Connection succeeds within 10 seconds.
+- Serial monitor logs show GAP connect event.
+
+**Evidence to Capture:**
+#### iPhone Connected View
+![BLE Connected](images/ble-scan-connected.png)
+
+#### Attribute Table View
+![BLE Attribute Table](images/ble_attribute_table.png)
+
+### Serial Log Snippet Showing Connection Event.
+    - I (23318) NimBLE: connection established; status=0
+    - I (23318) NimBLE: handle=1...
+    - I (23348) NimBLE:  conn_itvl=24 conn_latency=0 supervision_timeout=72 encrypted=0 authenticated=0 bonded=0
+
+---
+
+### BLE-02 — BLE Reconnect Reliability
+
+**Purpose:**
+Verify stability across repeated connect/disconnect cycles.
+
+**Setup:**
+- Device powered and advertising.
+- Serial monitor open.
+
+**Steps:**
+1. Connect to device.
+2. Disconnect from iPhone.
+3. Reconnect.
+4. Repeat 5 times.
+
+**Pass Criteria:**
+- At least 5/5 successful reconnect attempts.
+- No firmware crashes or resets.
+- Advertising resumes after disconnect.
+
+**Record:**
+- Number of successful attempts.
+- Approximate reconnect time.
+
+---
+
+### WIFI-01 — SoftAP Join + DHCP
+
+**Purpose:**
+Verify SoftAP initialization and DHCP functionality.
+
+**Setup:**
+- Flash `drone_wifi`
+- Reset board
+- Serial monitor open
+
+**Steps:**
+1. On iPhone, open WiFi settings.
+2. Select SoftAP SSID.
+3. Enter password if required.
+4. Confirm connection.
+
+**Pass Criteria:**
+- Connection succeeds within 15 seconds.
+- IP address assigned (192.168.4.x).
+- Serial monitor logs show station join event and DHCP started.
+
+**Evidence to Capture:**
+- Screenshot of WiFi settings with assigned IP.
+- Serial log snippet confirming connection.
+
+---
+
+### WIFI-02 — SoftAP Stability (2-Minute Hold)
+
+**Purpose:**
+Verify connection stability under idle conditions.
+
+**Setup:**
+- Connected to SoftAP.
+
+**Steps:**
+1. Remain connected for 2 minutes.
+2. Observe serial logs for disconnect events.
+
+**Pass Criteria:**
+- No unexpected disconnect.
+- No firmware reset.
+- No DHCP restart events.
+
+---
+
+## 4. Results Table
+
+| Test ID  | Date       | Firmware Commit | Result | Notes |
+|----------|------------|----------------|--------|-------|
+| BLE-01   |            |                |        |       |
+| BLE-02   |            |                |        |       |
+| WIFI-01  |            |                |        |       |
+| WIFI-02  |            |                |        |       |
+
+---
+
+## 5. Known Limitations (Current Phase)
+
+- No command/control characteristic implemented yet.
+- No encryption/bonding testing performed.
+- No latency measurement implemented yet.
+- No motor hardware integrated.
+
+---
+
+## 6. Next Phase Testing (Planned)
+
+- BLE command write characteristic
+- ACK via notify
+- Latency measurement (timestamp + sequence ID)
+- Packet loss measurement
+- Failure mode behavior (BLE drop mid-command)
+
+---
+
+## 7. Conclusion
+
+This test plan establishes a verified communication baseline for the autonomous drone firmware.
+All future command and motor control functionality will be built on top of this validated transport layer.
