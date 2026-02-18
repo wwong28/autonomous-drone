@@ -143,16 +143,6 @@ Verify connection stability under idle conditions.
 
 ---
 
-## 4. Results Table
-
-| Test ID  | Date       | Firmware Commit | Result | Notes |
-|----------|------------|----------------|--------|-------|
-| BLE-01   |            |                |        |       |
-| BLE-02   |            |                |        |       |
-| WIFI-01  |            |                |        |       |
-| WIFI-02  |            |                |        |       |
-
----
 
 ## 5. Known Limitations (Current Phase)
 
