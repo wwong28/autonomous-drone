@@ -163,7 +163,7 @@ Verify connection stability under idle conditions.
 - Unexpected disconnects: None observed
 - Firmware resets: None observed
 - DHCP restart events: None observed
-- Validation method: Successful HTTP GET to `http://192.168.4.1/` after >2 minutes (page returned: "esp32 c3 test alive")
+- Validation method: Successful search `http://192.168.4.1/` after >2 minutes (page returned: "esp32 c3 test alive")
 
 **Serial Logs**
 - I (542) esp_netif_lwip: DHCP server started on interface WIFI_AP_DEF with IP: 192.168.4.1
