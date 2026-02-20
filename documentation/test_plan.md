@@ -173,7 +173,7 @@ Verify connection stability under idle conditions.
 ---
 
 
-## 5. Known Limitations (Current Phase)
+## 4. Known Limitations (Current Phase)
 
 - No command/control characteristic implemented yet.
 - No encryption/bonding testing performed.
@@ -182,7 +182,7 @@ Verify connection stability under idle conditions.
 
 ---
 
-## 6. Next Phase Testing (Planned)
+## 5. Next Phase Testing (Planned)
 
 - BLE command write characteristic
 - ACK via notify
@@ -192,7 +192,7 @@ Verify connection stability under idle conditions.
 
 ---
 
-## 7. Conclusion
+## 6. Conclusion
 
 This test plan establishes a verified communication baseline for the autonomous drone firmware.
 All future command and motor control functionality will be built on top of this validated transport layer.
