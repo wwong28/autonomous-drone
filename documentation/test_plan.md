@@ -112,7 +112,7 @@ Verify stability across repeated connect/disconnect cycles.
 Verify SoftAP initialization and DHCP functionality.
 
 **Setup:**
-- Flash `drone_wifi`
+- Flash `drone_wifi/softAP`
 - Reset board
 - Serial monitor open
 
@@ -196,3 +196,4 @@ Verify connection stability under idle conditions.
 
 This test plan establishes a verified communication baseline for the autonomous drone firmware.
 All future command and motor control functionality will be built on top of this validated transport layer.
+The immediate next step is implementing BLE-03, which adds a structured command layer on top of what has already been verified. This involves defining a packet structure that organizes each command with a sequence ID, command ID, and payload. For every command the drone receives, it will send back an ACK packet confirming receipt.
