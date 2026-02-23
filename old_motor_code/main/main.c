@@ -1,23 +1,17 @@
 #include "motor.h"
-#include "driver/uart.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
 void app_main(void)
 {
-    motor_init();
+    motors_init();
 
-    motor_on(MOTOR_1);
-    motor_on(MOTOR_2);
+    // Example demo: ramp up motor 1, then stop all
+    motor_set_on_off(MOTOR_1, true);
+    motor_set_speed(MOTOR_1, 2000);
+    vTaskDelay(pdMS_TO_TICKS(1000));
 
-    while (1)
-    {
-        motor_increase_speed(MOTOR_1, 300);
-        motor_increase_speed(MOTOR_2, 300);
-        vTaskDelay(pdMS_TO_TICKS(500));
+    motor_increase_speed(MOTOR_1, 2000);
+    vTaskDelay(pdMS_TO_TICKS(1000));
 
-        motor_decrease_speed(MOTOR_1, 300);
-        motor_decrease_speed(MOTOR_2, 300);
-        vTaskDelay(pdMS_TO_TICKS(500));
-    }
-}
+    motors_stop_all();
