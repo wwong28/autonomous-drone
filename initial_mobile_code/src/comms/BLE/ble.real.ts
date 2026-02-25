@@ -7,8 +7,8 @@ import type {
   DroneBleClient,
 } from "./types.ts";
 
-// ESP32 NimBLE example UUIDs from your drone_ble firmware:
-const SERVICE_UUID = "592f1295-4399-9999-12c8-58b459a2712d";
+// Must match drone_ble/main/gatt_svr.c (NimBLE BLE_UUID128_INIT byte order).
+const SERVICE_UUID = "59462f12-9543-9999-12c8-58b459a2712d";
 const CHARACTERISTIC_UUID = "33333333-2222-2222-1111-111100000000";
 
 // NOTE: We import the native lib only inside this file.
@@ -37,7 +37,8 @@ export class RealDroneBleClient implements DroneBleClient {
         resolve(Array.from(found.values()));
       }, timeoutMs);
 
-      this.manager.startDeviceScan([SERVICE_UUID], null, (error, device) => {
+      // No filter: ESP32 may advertise 16-bit UUID (0x1811) only; name is "DroneBLE".
+      this.manager.startDeviceScan(null, null, (error, device) => {
         if (error) {
           clearTimeout(timer);
           stop();
