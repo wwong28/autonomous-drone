@@ -6,6 +6,35 @@
     "icon": "./assets/icon.png",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
-    "assetBundlePatterns": ["**/*"]
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.anonymous.aerodroneapp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.anonymous.aerodroneapp",
+      "permissions": [
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT"
+      ]
+    },
+    "plugins": [
+      [
+        "react-native-ble-plx",
+        {
+          "bluetoothAlwaysPermission": "Allow Aero Drone App to connect to your drone via Bluetooth."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "f5eeacf4-abe3-4c2d-bf8d-eaa0d7c8175e"
+      }
+    }
   }
 }
