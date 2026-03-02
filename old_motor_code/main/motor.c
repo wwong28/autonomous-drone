@@ -2,6 +2,9 @@
 #include "driver/ledc.h"
 #include "driver/gpio.h"
 #include "esp_err.h"
+#include "esp_log.h"
+
+static const char *TAG = "motor";
 
 // Hardware mapping
 static const int motor_pwm_gpios[4] = {4, 1, 8, 6}; // PWM pins IN1, IN3, IN5, IN7
@@ -16,11 +19,13 @@ static const ledc_channel_t ledc_channels[4] = {
 #define MAX_DUTY 8191
 #define MIN_DUTY 0
 
-static int motor_duty[4] = {4096, 4096, 4096, 4096};
-static bool motor_on[4] = {true, true, true, true};
+static int motor_duty[4] = {0, 0, 0, 0};
+static bool motor_on[4] = {false, false, false, false};
 
 void motors_init(void)
 {
+    ESP_LOGI(TAG, "Initializing motors...");
+
     // Configure direction pins
     uint64_t pin_mask = 0;
     for (int i = 0; i < 4; i++)
@@ -38,7 +43,7 @@ void motors_init(void)
     for (int i = 0; i < 4; i++)
         gpio_set_level(motor_dir_gpios[i], 0);
 
-    // Configure PWM channels
+    // Configure PWM timer
     ledc_timer_config_t timer_conf = {
         .speed_mode = LEDC_MODE,
         .timer_num = LEDC_TIMER,
@@ -47,6 +52,7 @@ void motors_init(void)
         .clk_cfg = LEDC_AUTO_CLK};
     ESP_ERROR_CHECK(ledc_timer_config(&timer_conf));
 
+    // Configure PWM channels, all starting at duty=0 (stopped)
     for (int i = 0; i < 4; i++)
     {
         ledc_channel_config_t channel_conf = {
@@ -55,15 +61,18 @@ void motors_init(void)
             .timer_sel = LEDC_TIMER,
             .intr_type = LEDC_INTR_DISABLE,
             .gpio_num = motor_pwm_gpios[i],
-            .duty = motor_duty[i],
+            .duty = 0,
             .hpoint = 0};
         ESP_ERROR_CHECK(ledc_channel_config(&channel_conf));
     }
+
+    ESP_LOGI(TAG, "Motors initialized (all off)");
 }
 
 static void motor_apply_duty(motor_t motor)
 {
     int duty = motor_on[motor] ? motor_duty[motor] : 0;
+    ESP_LOGI(TAG, "Motor %d -> duty %d", motor + 1, duty);
     ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, ledc_channels[motor], duty));
     ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, ledc_channels[motor]));
 }
@@ -97,16 +106,19 @@ void motor_set_speed(motor_t motor, int duty)
 void motor_set_on_off(motor_t motor, bool on)
 {
     motor_on[motor] = on;
+    ESP_LOGI(TAG, "Motor %d %s", motor + 1, on ? "ON" : "OFF");
     motor_apply_duty(motor);
 }
 
 void motor_set_direction(motor_t motor, bool forward)
 {
+    ESP_LOGI(TAG, "Motor %d direction: %s", motor + 1, forward ? "forward" : "reverse");
     gpio_set_level(motor_dir_gpios[motor], forward ? 0 : 1);
 }
 
 void motors_stop_all(void)
 {
+    ESP_LOGI(TAG, "Stopping all motors");
     for (int i = 0; i < 4; i++)
     {
         motor_on[i] = false;
