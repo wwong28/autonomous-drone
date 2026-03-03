@@ -1,13 +1,23 @@
-import React, { useState, useCallback } from "react";
-import { View, Text, Pressable, StyleSheet, ScrollView, ActivityIndicator, Alert, useWindowDimensions } from "react-native";
+import React, { useState, useCallback, useEffect } from "react";
+import { View, Text, Pressable, StyleSheet, ScrollView, ActivityIndicator, Alert, useWindowDimensions, Platform } from "react-native";
+import * as Location from "expo-location";
 import { getBleClient, type BleDeviceSummary } from "../../../src/comms/BLE";
+import { getWifiClient, type WifiNetworkSummary } from "../../../src/comms/WiFi";
 
 const SCAN_TIMEOUT_MS = 5000;
+const WIFI_SCAN_TIMEOUT_MS = 2500;
 
 function formatRssi(rssi?: number): string {
   if (rssi == null) return "—";
   if (rssi >= -50) return "Strong";
   if (rssi >= -70) return "Good";
+  return "Weak";
+}
+
+function formatWifiSignal(strength?: number): string {
+  if (strength == null) return "—";
+  if (strength >= 80) return "Excellent";
+  if (strength >= 60) return "Good";
   return "Weak";
 }
 
@@ -18,6 +28,27 @@ export default function Connect() {
   const [devices, setDevices] = useState<BleDeviceSummary[]>([]);
   const [bleError, setBleError] = useState<string | null>(null);
   const [wifiStatus, setWifiStatus] = useState<"disconnected" | "scanning" | "connected">("disconnected");
+  const [wifiNetworks, setWifiNetworks] = useState<WifiNetworkSummary[]>([]);
+  const [wifiError, setWifiError] = useState<string | null>(null);
+  const [wifiRefresh, setWifiRefresh] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const client = getWifiClient();
+        if (typeof client.refreshConnectionStatus === "function") {
+          await client.refreshConnectionStatus();
+          if (!cancelled) setWifiRefresh((n) => n + 1);
+        }
+      } catch {
+        // WiFi may not be available (Expo Go)
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleScan = useCallback(async () => {
     setBleError(null);
@@ -56,6 +87,83 @@ export default function Connect() {
     }
   }, []);
 
+  const handleWifiScan = useCallback(async () => {
+    setWifiError(null);
+    setWifiStatus("scanning");
+    try {
+      if (Platform.OS === "android") {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          setWifiError("Location permission required for WiFi scan.");
+          return;
+        }
+      }
+      const client = getWifiClient();
+      const list = await client.scan({ timeoutMs: WIFI_SCAN_TIMEOUT_MS });
+      setWifiNetworks(list);
+      if (typeof client.refreshConnectionStatus === "function") {
+        await client.refreshConnectionStatus();
+        setWifiRefresh((n) => n + 1);
+      }
+    } catch (e) {
+      setWifiError(e instanceof Error ? e.message : "Scan failed");
+    } finally {
+      setWifiStatus("disconnected");
+    }
+  }, []);
+
+  const handleWifiConnect = useCallback(async (network: WifiNetworkSummary) => {
+    setWifiError(null);
+    const connectWithPassword = async (password?: string) => {
+      try {
+        const client = getWifiClient();
+        await client.connect(network.id, password);
+        if (typeof client.refreshConnectionStatus === "function") {
+          await client.refreshConnectionStatus();
+          setWifiRefresh((n) => n + 1);
+        }
+      } catch (e) {
+        setWifiError(e instanceof Error ? e.message : "Connection failed");
+        Alert.alert("Connection failed", e instanceof Error ? e.message : "Could not connect to network.");
+      }
+    };
+    if (network.secured) {
+      if (Platform.OS === "ios") {
+        Alert.prompt(
+          `Connect to ${network.ssid}`,
+          "Enter WiFi password",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Connect", onPress: (pw?: string) => connectWithPassword(pw || undefined) },
+          ],
+          "secure-text"
+        );
+      } else {
+        Alert.alert(
+          "Secured network",
+          `To connect to "${network.ssid}", go to your device WiFi settings and enter the password there.`
+        );
+      }
+    } else {
+      await connectWithPassword();
+    }
+  }, []);
+
+  const handleWifiDisconnect = useCallback(async () => {
+    setWifiError(null);
+    try {
+      const client = getWifiClient();
+      await client.disconnect();
+      if (typeof client.refreshConnectionStatus === "function") {
+        await client.refreshConnectionStatus();
+        setWifiRefresh((n) => n + 1);
+      }
+    } catch (e) {
+      setWifiError(e instanceof Error ? e.message : "Disconnect failed");
+      Alert.alert("Disconnect failed", e instanceof Error ? e.message : "Could not disconnect.");
+    }
+  }, []);
+
   const connectedId = (() => {
     try {
       return getBleClient().getConnectedDeviceId();
@@ -64,6 +172,16 @@ export default function Connect() {
     }
   })();
   const isConnected = connectedId != null;
+
+  const connectedWifiId = (() => {
+    try {
+      void wifiRefresh; // force recalc when refresh changes
+      return getWifiClient().getConnectedNetworkId();
+    } catch {
+      return null;
+    }
+  })();
+  const isWifiConnected = connectedWifiId != null;
 
   return (
     <View style={styles.root}>
@@ -141,58 +259,83 @@ export default function Connect() {
             </View>
           </View>
 
-                    {/* WiFi Section */}
-                    <View style={styles.section}>
-                        <View style={styles.sectionHeader}>
-                            <Text style={styles.sectionTitle}>WiFi</Text>
-                            <View style={[styles.statusBadge, wifiStatus === "connected" && styles.statusConnected]}>
-                                <Text style={styles.statusText}>
-                                    {wifiStatus === "connected" ? "CONNECTED" : wifiStatus === "scanning" ? "SCANNING" : "DISCONNECTED"}
-                                </Text>
-                            </View>
-                        </View>
+          {/* WiFi Section */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>WiFi</Text>
+              <View style={[styles.statusBadge, isWifiConnected && styles.statusConnected]}>
+                <Text style={styles.statusText}>
+                  {isWifiConnected ? "CONNECTED" : wifiStatus === "scanning" ? "SCANNING" : "DISCONNECTED"}
+                </Text>
+              </View>
+            </View>
 
-                        <Pressable
-                            style={[styles.btn, styles.btnPrimary]}
-                            onPress={() => {
-                                if (wifiStatus === "disconnected") {
-                                    setWifiStatus("scanning");
-                                } else if (wifiStatus === "scanning") {
-                                    setWifiStatus("connected");
-                                } else {
-                                    setWifiStatus("disconnected");
-                                }
-                            }}
-                        >
-                            <Text style={styles.btnLabel}>
-                                {wifiStatus === "connected" ? "Disconnect" : wifiStatus === "scanning" ? "Scanning..." : "Scan for Networks"}
-                            </Text>
-                        </Pressable>
+            {wifiError ? (
+              <View style={styles.errorBox}>
+                <Text style={styles.errorText}>{wifiError}</Text>
+              </View>
+            ) : null}
 
-                        <View style={styles.deviceList}>
-                            <Text style={styles.label}>Available Networks</Text>
-                            {wifiStatus === "scanning" && (
-                                <Text style={styles.hint}>WiFi support coming soon. Use Bluetooth to connect.</Text>
-                            )}
-                            <View style={styles.deviceItem}>
-                                <View style={styles.deviceInfo}>
-                                    <Text style={styles.deviceName}>Drone-Network-5G</Text>
-                                    <Text style={styles.deviceDetails}>
-                                        Signal: Excellent • Secured
-                                        {wifiStatus !== "connected" && " • WiFi coming soon"}
-                                    </Text>
-                                </View>
-                                <Pressable
-                                    style={[styles.btn, styles.btnSmall]}
-                                    disabled
-                                >
-                                    <Text style={[styles.btnLabel, { opacity: 0.6 }]}>
-                                        {wifiStatus === "connected" ? "Connected" : "Coming soon"}
-                                    </Text>
-                                </Pressable>
-                            </View>
-                        </View>
-                    </View>
+            <Pressable
+              style={[styles.btn, styles.btnPrimary]}
+              onPress={() => {
+                if (isWifiConnected) {
+                  handleWifiDisconnect();
+                } else if (wifiStatus === "scanning") {
+                  // Scan in progress
+                } else {
+                  handleWifiScan();
+                }
+              }}
+              disabled={wifiStatus === "scanning"}
+            >
+              {wifiStatus === "scanning" ? (
+                <ActivityIndicator color="rgba(255,255,255,0.7)" />
+              ) : (
+                <Text style={styles.btnLabel}>
+                  {isWifiConnected ? "Disconnect" : "Scan for Networks"}
+                </Text>
+              )}
+            </Pressable>
+
+            {isWifiConnected && (
+              <View style={[styles.deviceItem, { marginBottom: 12 }]}>
+                <View style={styles.deviceInfo}>
+                  <Text style={styles.label}>Current Network</Text>
+                  <Text style={styles.deviceName}>{connectedWifiId}</Text>
+                </View>
+              </View>
+            )}
+
+            <View style={styles.deviceList}>
+              <Text style={styles.label}>Available Networks</Text>
+              {Platform.OS === "ios" && wifiNetworks.length === 0 && wifiStatus !== "scanning" ? (
+                <Text style={styles.hint}>Network scanning is only available on Android.</Text>
+              ) : wifiNetworks.length === 0 && wifiStatus !== "scanning" && Platform.OS !== "ios" && (
+                <Text style={styles.hint}>Tap “Scan for Networks” to find drone WiFi.</Text>
+              )}
+              {wifiNetworks.map((n) => (
+                <View key={n.id} style={styles.deviceItem}>
+                  <View style={styles.deviceInfo}>
+                    <Text style={styles.deviceName}>{n.ssid}</Text>
+                    <Text style={styles.deviceDetails}>
+                      Signal: {formatWifiSignal(n.signalStrength)}
+                      {n.secured ? " • Secured" : ""}
+                    </Text>
+                  </View>
+                  <Pressable
+                    style={[styles.btn, styles.btnSmall]}
+                    onPress={() => handleWifiConnect(n)}
+                    disabled={isWifiConnected}
+                  >
+                    <Text style={styles.btnLabel}>
+                      {connectedWifiId === n.id ? "Connected" : "Connect"}
+                    </Text>
+                  </Pressable>
+                </View>
+              ))}
+            </View>
+          </View>
                 </ScrollView>
             </View>
         </View>
