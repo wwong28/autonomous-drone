@@ -1,4 +1,5 @@
 import { Tabs } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function TabLayout() {
     return (
@@ -10,10 +11,34 @@ export default function TabLayout() {
                 headerShown: false,
             }}
         >
-            <Tabs.Screen name="index" options={{ title: "Home" }} />
-            <Tabs.Screen name="connect" options={{ title: "Connect" }} />
-            <Tabs.Screen name="control" options={{ title: "Control" }} />
-            <Tabs.Screen name="video" options={{ title: "Video" }} />
+            <Tabs.Screen
+                name="index"
+                options={{
+                    title: "Home",
+                    tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size ?? 24} color={color} />,
+                }}
+            />
+            <Tabs.Screen
+                name="connect"
+                options={{
+                    title: "Connect",
+                    tabBarIcon: ({ color, size }) => <Ionicons name="bluetooth" size={size ?? 24} color={color} />,
+                }}
+            />
+            <Tabs.Screen
+                name="control"
+                options={{
+                    title: "Control",
+                    tabBarIcon: ({ color, size }) => <Ionicons name="game-controller" size={size ?? 24} color={color} />,
+                }}
+            />
+            <Tabs.Screen
+                name="video"
+                options={{
+                    title: "Video",
+                    tabBarIcon: ({ color, size }) => <Ionicons name="videocam" size={size ?? 24} color={color} />,
+                }}
+            />
         </Tabs>
     );
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, Pressable, StyleSheet, useWindowDimensions } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Video() {
     const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
@@ -19,7 +20,7 @@ export default function Video() {
                 <View style={styles.videoContainer}>
                     <View style={styles.videoPlaceholder}>
                         <View style={styles.videoIcon}>
-                            <Text style={styles.videoIconText}>📹</Text>
+                            <Ionicons name="videocam" size={48} color="rgba(255,255,255,0.4)" />
                         </View>
                         <Text style={styles.placeholderText}>Video Stream</Text>
                         <Text style={styles.placeholderSubtext}>Connect to drone to view live feed</Text>
@@ -29,13 +30,13 @@ export default function Video() {
                     <View style={styles.videoControls}>
                         <View style={styles.controlRow}>
                             <Pressable style={styles.controlButton} onPress={() => {}}>
-                                <Text style={styles.controlButtonText}>⏸</Text>
+                                <Ionicons name="pause" size={24} color="white" />
                             </Pressable>
                             <Pressable style={styles.controlButton} onPress={() => {}}>
-                                <Text style={styles.controlButtonText}>⏹</Text>
+                                <Ionicons name="stop" size={24} color="white" />
                             </Pressable>
                             <Pressable style={styles.controlButton} onPress={() => {}}>
-                                <Text style={styles.controlButtonText}>⏺</Text>
+                                <Ionicons name="radio-button-on" size={24} color="white" />
                             </Pressable>
                         </View>
                     </View>
