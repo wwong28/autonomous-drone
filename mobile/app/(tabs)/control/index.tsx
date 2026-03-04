@@ -1,16 +1,16 @@
 import React from "react";
 import { View, Text, Pressable, StyleSheet, useWindowDimensions } from "react-native";
 import { useComms } from "../../../src/context/CommsContext";
+import { spacing, fontSizes, radii, getPanelDimensions } from "../../../src/theme/layout";
 
 export default function Control() {
     const comms = useComms();
-    const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
-    const panelWidth = Math.min(390, SCREEN_WIDTH - 32);
-    const panelHeight = Math.min(844, SCREEN_HEIGHT - 32);
+    const { width: screenWidth } = useWindowDimensions();
+    const { contentPadding } = getPanelDimensions(screenWidth, 0);
 
     return (
         <View style={styles.root}>
-            <View style={[styles.panel, { width: panelWidth, height: panelHeight }]}>
+            <View style={[styles.content, { paddingHorizontal: contentPadding }]}>
                 {/* Header */}
                 <View style={styles.header}>
                     <Text style={styles.title}>Manual Control</Text>
@@ -46,54 +46,39 @@ export default function Control() {
                         </Pressable>
                     </View>
                 </View>
-
-                {/* Emergency Stop */}
-                <View style={styles.emergencySection}>
-                    <Pressable style={[styles.btn, styles.btnStop]} onPress={() => comms.send({ type: "ESTOP" })}>
-                        <Text style={[styles.btnLabel, { color: "#ff3d3d" }]}>Emergency Stop</Text>
-                    </Pressable>
-                </View>
             </View>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    root: { flex: 1, backgroundColor: "#05070a", alignItems: "center", justifyContent: "center" },
-    panel: {
-        minWidth: 320,
-        maxWidth: 390,
-        maxHeight: 844,
-        borderRadius: 40,
-        overflow: "hidden",
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.1)",
-        backgroundColor: "#0b1020",
-        paddingTop: 60,
-        paddingHorizontal: 32,
+    root: { flex: 1, backgroundColor: "#05070a" },
+    content: {
+        flex: 1,
+        paddingTop: spacing.xxxl + 20,
     },
     header: {
-        marginBottom: 40,
+        marginBottom: spacing.xxxl,
     },
     title: {
-        fontSize: 24,
+        fontSize: fontSizes.xxl,
         fontWeight: "800",
         color: "white",
         letterSpacing: 1,
     },
     subtitle: {
-        fontSize: 12,
+        fontSize: fontSizes.sm,
         color: "rgba(255,255,255,0.4)",
         letterSpacing: 1,
-        marginTop: 4,
+        marginTop: spacing.xs,
     },
-    label: { fontSize: 10, letterSpacing: 2, color: "rgba(255,255,255,0.4)", marginBottom: 16 },
+    label: { fontSize: fontSizes.xs, letterSpacing: 2, color: "rgba(255,255,255,0.4)", marginBottom: spacing.lg },
     controlArea: {
-        marginBottom: 40,
+        marginBottom: spacing.xxxl,
     },
     placeholder: {
-        height: 300,
-        borderRadius: 24,
+        height: 280,
+        borderRadius: radii.lg,
         borderWidth: 1,
         borderColor: "rgba(255,255,255,0.08)",
         backgroundColor: "rgba(255,255,255,0.03)",
@@ -101,27 +86,27 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     placeholderText: {
-        fontSize: 16,
+        fontSize: fontSizes.lg,
         fontWeight: "600",
         color: "rgba(255,255,255,0.5)",
         letterSpacing: 1,
     },
     placeholderSubtext: {
-        fontSize: 12,
+        fontSize: fontSizes.sm,
         color: "rgba(255,255,255,0.3)",
-        marginTop: 8,
+        marginTop: spacing.sm,
     },
     quickActions: {
-        marginBottom: 40,
+        marginBottom: spacing.xxxl,
     },
     actionRow: {
         flexDirection: "row",
-        gap: 12,
-        marginBottom: 12,
+        gap: spacing.md,
+        marginBottom: spacing.md,
     },
     btn: {
-        height: 80,
-        borderRadius: 24,
+        minHeight: 72,
+        borderRadius: radii.lg,
         borderWidth: 1,
         borderColor: "rgba(255,255,255,0.08)",
         backgroundColor: "rgba(255,255,255,0.03)",
@@ -132,16 +117,6 @@ const styles = StyleSheet.create({
     btnSmall: {
         height: 70,
     },
-    btnStop: {
-        borderColor: "rgba(255,61,61,0.3)",
-        backgroundColor: "rgba(255,61,61,0.05)",
-    },
-    btnLabel: { fontSize: 12, fontWeight: "800", letterSpacing: 2, color: "rgba(255,255,255,0.7)" },
-    emergencySection: {
-        position: "absolute",
-        left: 32,
-        right: 32,
-        bottom: 60,
-    },
+    btnLabel: { fontSize: fontSizes.sm, fontWeight: "800", letterSpacing: 2, color: "rgba(255,255,255,0.7)" },
 });
 

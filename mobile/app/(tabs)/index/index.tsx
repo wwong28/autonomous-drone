@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { View, Text, Pressable, StyleSheet, useWindowDimensions, Alert } from "react-native";
+import { View, Text, Pressable, StyleSheet, ScrollView, useWindowDimensions, Alert } from "react-native";
 import { useComms } from "../../../src/context/CommsContext";
 import type { Telemetry } from "../../../src/protocol/types";
+import { spacing, fontSizes, radii, getPanelDimensions } from "../../../src/theme/layout";
 
 export default function Index() {
     const comms = useComms();
-    const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
-    const styles = useMemo(() => getStyles(SCREEN_WIDTH, SCREEN_HEIGHT), [SCREEN_WIDTH, SCREEN_HEIGHT]);
+    const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+    const styles = useMemo(() => getStyles(screenWidth, screenHeight), [screenWidth, screenHeight]);
     const [tel, setTel] = useState<Telemetry>({
         link: "DISCONNECTED",
         batteryPct: 0,
@@ -26,9 +27,14 @@ export default function Index() {
 
     return (
         <View style={styles.root}>
-            <View style={styles.panel}>
-                {/* Status bar */}
-                <View style={styles.statusRow}>
+            <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
+                <View style={styles.content}>
+                    {/* Status bar */}
+                    <View style={styles.statusRow}>
                     <View>
                         <Text style={styles.label}>Signal Status</Text>
                         <Text style={styles.mono}>{tel.link}</Text>
@@ -38,7 +44,7 @@ export default function Index() {
                                     key={i}
                                     style={[
                                         styles.signalBar,
-                                        { height: 4 + i * 4, opacity: i === 4 ? 0.3 : 1, marginRight: i < 4 ? 3 : 0 },
+                                        { height: spacing.xs + i * spacing.xs, opacity: i === 4 ? 0.3 : 1, marginRight: i < 4 ? 3 : 0 },
                                         barActive(i) && styles.signalBarActive,
                                     ]}
                                 />
@@ -49,7 +55,7 @@ export default function Index() {
                     <View style={{ alignItems: "flex-end" }}>
                         <Text style={styles.label}>Battery Life</Text>
                         <Text style={[styles.mono, styles.teal]}>{tel.batteryPct}%</Text>
-                        <Text style={[styles.label, { fontSize: 8, marginTop: 4 }]}>
+                        <Text style={[styles.label, { fontSize: fontSizes.xs - 2, marginTop: spacing.xs }]}>
                             {tel.batteryMins}M REMAINING
                         </Text>
                     </View>
@@ -63,7 +69,7 @@ export default function Index() {
                         <Text style={styles.unit}> KM/H</Text>
                     </Text>
 
-                    <View style={{ height: 28 }} />
+                    <View style={{ height: spacing.xxl }} />
 
                     <Text style={styles.label}>Current Altitude</Text>
                     <Text style={styles.big}>
@@ -92,13 +98,6 @@ export default function Index() {
                     </Pressable>
 
                     <Pressable
-                        style={[styles.btn, styles.btnStop, styles.btnSpacing]}
-                        onPress={() => comms.send({ type: "ESTOP" })}
-                    >
-                        <Text style={[styles.btnLabel, { color: "#ff3d3d" }]}>Emergency Stop</Text>
-                    </Pressable>
-
-                    <Pressable
                         style={[styles.btn, { opacity: tel.link === "SECURE_LINK" ? 0.6 : 1 }]}
                         onPress={async () => {
                             try {
@@ -114,52 +113,46 @@ export default function Index() {
                         </Text>
                     </Pressable>
                 </View>
-            </View>
+                </View>
+            </ScrollView>
         </View>
     );
 }
 
 
-const getStyles = (screenWidth: number, screenHeight: number) => StyleSheet.create({
-    root: { flex: 1, backgroundColor: "#05070a", alignItems: "center", justifyContent: "center" },
-    panel: {
-        width: Math.min(390, screenWidth - 32),
-        height: Math.min(844, screenHeight - 32),
-        maxWidth: 390,
-        maxHeight: 844,
-        borderRadius: 40,
-        overflow: "hidden",
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.1)",
-        backgroundColor: "#0b1020",
-        paddingTop: 60,
+const getStyles = (screenWidth: number, screenHeight: number) => {
+    const { contentPadding } = getPanelDimensions(screenWidth, screenHeight);
+    return StyleSheet.create({
+    root: { flex: 1, backgroundColor: "#05070a" },
+    content: {
+        flex: 1,
+        paddingTop: spacing.xxxl + 20,
+        paddingHorizontal: contentPadding,
     },
     statusRow: {
-        paddingHorizontal: 32,
         flexDirection: "row",
         justifyContent: "space-between",
     },
-    label: { fontSize: 10, letterSpacing: 2, color: "rgba(255,255,255,0.4)" },
-    mono: { marginTop: 4, fontSize: 14, color: "white" },
+    label: { fontSize: fontSizes.xs, letterSpacing: 2, color: "rgba(255,255,255,0.4)" },
+    mono: { marginTop: spacing.xs, fontSize: fontSizes.md, color: "white" },
     teal: { color: "#00f2ff" },
 
     signalRow: { flexDirection: "row", alignItems: "flex-end", marginTop: 6 },
     signalBar: { width: 3, borderRadius: 1, backgroundColor: "rgba(255,255,255,0.2)" },
     signalBarActive: { backgroundColor: "#00f2ff" },
 
-    telemetry: { paddingHorizontal: 32, marginTop: 120 },
-    big: { fontSize: 72, fontWeight: "800", color: "white", lineHeight: 74 },
-    unit: { fontSize: 16, color: "rgba(255,255,255,0.6)" },
+    telemetry: { marginTop: 80 },
+    big: { fontSize: fontSizes.xxxl, fontWeight: "800", color: "white", lineHeight: 76 },
+    unit: { fontSize: fontSizes.lg, color: "rgba(255,255,255,0.6)" },
 
+    scrollView: { flex: 1 },
+    scrollContent: { paddingBottom: spacing.xxxl + 40 },
     controls: {
-        position: "absolute",
-        left: 32,
-        right: 32,
-        bottom: 60,
+        marginTop: spacing.xxxl,
     },
     btn: {
-        height: 80,
-        borderRadius: 24,
+        minHeight: 72,
+        borderRadius: radii.lg,
         borderWidth: 1,
         borderColor: "rgba(255,255,255,0.08)",
         backgroundColor: "rgba(255,255,255,0.03)",
@@ -167,15 +160,11 @@ const getStyles = (screenWidth: number, screenHeight: number) => StyleSheet.crea
         justifyContent: "center",
     },
     btnPrimary: {
-        height: 100,
+        minHeight: 88,
         borderColor: "rgba(255,255,255,0.15)",
         backgroundColor: "rgba(255,255,255,0.05)",
     },
-    btnStop: {
-        borderColor: "rgba(255,61,61,0.3)",
-        backgroundColor: "rgba(255,61,61,0.05)",
-    },
-    btnLabel: { fontSize: 12, fontWeight: "800", letterSpacing: 2, color: "rgba(255,255,255,0.7)" },
-    btnSpacing: { marginBottom: 16 },
+    btnLabel: { fontSize: fontSizes.sm, fontWeight: "800", letterSpacing: 2, color: "rgba(255,255,255,0.7)" },
+    btnSpacing: { marginBottom: spacing.lg },
 });
-
+};

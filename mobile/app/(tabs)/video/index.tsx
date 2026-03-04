@@ -1,16 +1,21 @@
 import React from "react";
-import { View, Text, Pressable, StyleSheet, useWindowDimensions } from "react-native";
+import { View, Text, Pressable, StyleSheet, ScrollView, useWindowDimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { spacing, fontSizes, radii, getPanelDimensions } from "../../../src/theme/layout";
 
 export default function Video() {
-    const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
-    const panelWidth = Math.min(390, SCREEN_WIDTH - 32);
-    const panelHeight = Math.min(844, SCREEN_HEIGHT - 32);
+    const { width: screenWidth } = useWindowDimensions();
+    const { contentPadding } = getPanelDimensions(screenWidth, 0);
 
     return (
         <View style={styles.root}>
-            <View style={[styles.panel, { width: panelWidth, height: panelHeight }]}>
-                {/* Header */}
+            <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
+                <View style={[styles.content, { paddingHorizontal: contentPadding }]}>
+                    {/* Header */}
                 <View style={styles.header}>
                     <Text style={styles.title}>Live Video</Text>
                     <Text style={styles.subtitle}>Real-time drone camera feed</Text>
@@ -20,7 +25,7 @@ export default function Video() {
                 <View style={styles.videoContainer}>
                     <View style={styles.videoPlaceholder}>
                         <View style={styles.videoIcon}>
-                            <Ionicons name="videocam" size={48} color="rgba(255,255,255,0.4)" />
+                            <Ionicons name="videocam" size={fontSizes.xxl * 2} color="rgba(255,255,255,0.4)" />
                         </View>
                         <Text style={styles.placeholderText}>Video Stream</Text>
                         <Text style={styles.placeholderSubtext}>Connect to drone to view live feed</Text>
@@ -30,13 +35,13 @@ export default function Video() {
                     <View style={styles.videoControls}>
                         <View style={styles.controlRow}>
                             <Pressable style={styles.controlButton} onPress={() => {}}>
-                                <Ionicons name="pause" size={24} color="white" />
+                                <Ionicons name="pause" size={fontSizes.xxl} color="white" />
                             </Pressable>
                             <Pressable style={styles.controlButton} onPress={() => {}}>
-                                <Ionicons name="stop" size={24} color="white" />
+                                <Ionicons name="stop" size={fontSizes.xxl} color="white" />
                             </Pressable>
                             <Pressable style={styles.controlButton} onPress={() => {}}>
-                                <Ionicons name="radio-button-on" size={24} color="white" />
+                                <Ionicons name="radio-button-on" size={fontSizes.xxl} color="white" />
                             </Pressable>
                         </View>
                     </View>
@@ -78,46 +83,41 @@ export default function Video() {
                     </View>
                 </View>
             </View>
+            </ScrollView>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    root: { flex: 1, backgroundColor: "#05070a", alignItems: "center", justifyContent: "center" },
-    panel: {
-        minWidth: 320,
-        maxWidth: 390,
-        borderRadius: 40,
-        overflow: "hidden",
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.1)",
-        backgroundColor: "#0b1020",
-        paddingTop: 60,
-        paddingHorizontal: 32,
+    root: { flex: 1, backgroundColor: "#05070a" },
+    scrollView: { flex: 1 },
+    scrollContent: { paddingBottom: spacing.xxxl + 80 },
+    content: {
+        paddingTop: spacing.xxxl + 20,
     },
     header: {
-        marginBottom: 24,
+        marginBottom: spacing.xl,
     },
     title: {
-        fontSize: 24,
+        fontSize: fontSizes.xxl,
         fontWeight: "800",
         color: "white",
         letterSpacing: 1,
     },
     subtitle: {
-        fontSize: 12,
+        fontSize: fontSizes.sm,
         color: "rgba(255,255,255,0.4)",
         letterSpacing: 1,
-        marginTop: 4,
+        marginTop: spacing.xs,
     },
     videoContainer: {
-        height: 400,
-        borderRadius: 24,
+        minHeight: 320,
+        borderRadius: radii.lg,
         overflow: "hidden",
         borderWidth: 1,
         borderColor: "rgba(255,255,255,0.08)",
         backgroundColor: "#05070a",
-        marginBottom: 24,
+        marginBottom: spacing.xl,
         position: "relative",
     },
     videoPlaceholder: {
@@ -126,43 +126,43 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     videoIcon: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
+        width: 72,
+        height: 72,
+        borderRadius: radii.xxl,
         backgroundColor: "rgba(255,255,255,0.05)",
         alignItems: "center",
         justifyContent: "center",
-        marginBottom: 16,
+        marginBottom: spacing.lg,
     },
     videoIconText: {
         fontSize: 40,
     },
     placeholderText: {
-        fontSize: 16,
+        fontSize: fontSizes.lg,
         fontWeight: "600",
         color: "rgba(255,255,255,0.5)",
         letterSpacing: 1,
-        marginBottom: 8,
+        marginBottom: spacing.sm,
     },
     placeholderSubtext: {
-        fontSize: 12,
+        fontSize: fontSizes.sm,
         color: "rgba(255,255,255,0.3)",
     },
     videoControls: {
         position: "absolute",
-        bottom: 16,
-        left: 16,
-        right: 16,
+        bottom: spacing.lg,
+        left: spacing.lg,
+        right: spacing.lg,
     },
     controlRow: {
         flexDirection: "row",
         justifyContent: "center",
-        gap: 12,
+        gap: spacing.md,
     },
     controlButton: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
         backgroundColor: "rgba(0,0,0,0.6)",
         borderWidth: 1,
         borderColor: "rgba(255,255,255,0.2)",
@@ -174,9 +174,9 @@ const styles = StyleSheet.create({
         color: "white",
     },
     videoInfo: {
-        marginBottom: 24,
-        padding: 16,
-        borderRadius: 16,
+        marginBottom: spacing.xl,
+        padding: spacing.lg,
+        borderRadius: radii.md,
         borderWidth: 1,
         borderColor: "rgba(255,255,255,0.08)",
         backgroundColor: "rgba(255,255,255,0.02)",
@@ -184,15 +184,15 @@ const styles = StyleSheet.create({
     infoRow: {
         flexDirection: "row",
         justifyContent: "space-between",
-        marginBottom: 12,
+        marginBottom: spacing.md,
     },
     infoLabel: {
-        fontSize: 10,
+        fontSize: fontSizes.xs,
         letterSpacing: 1,
         color: "rgba(255,255,255,0.4)",
     },
     infoValue: {
-        fontSize: 12,
+        fontSize: fontSizes.sm,
         fontWeight: "600",
         color: "white",
         letterSpacing: 1,
@@ -200,17 +200,18 @@ const styles = StyleSheet.create({
     infoValueDisconnected: {
         color: "rgba(255,255,255,0.3)",
     },
-    label: { fontSize: 10, letterSpacing: 2, color: "rgba(255,255,255,0.4)", marginBottom: 12 },
+    label: { fontSize: fontSizes.xs, letterSpacing: 2, color: "rgba(255,255,255,0.4)", marginBottom: spacing.md },
     cameraControls: {
-        marginBottom: 40,
+        marginBottom: spacing.xxxl,
+        marginTop: spacing.lg,
     },
     cameraButtonRow: {
         flexDirection: "row",
-        gap: 12,
+        gap: spacing.md,
     },
     cameraButton: {
-        height: 60,
-        borderRadius: 16,
+        minHeight: 52,
+        borderRadius: radii.md,
         borderWidth: 1,
         borderColor: "rgba(255,255,255,0.08)",
         backgroundColor: "rgba(255,255,255,0.03)",
@@ -224,7 +225,7 @@ const styles = StyleSheet.create({
         flex: 2,
     },
     cameraButtonText: {
-        fontSize: 11,
+        fontSize: fontSizes.sm,
         fontWeight: "700",
         letterSpacing: 1,
         color: "rgba(255,255,255,0.7)",

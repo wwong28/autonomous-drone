@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
+import { spacing } from "../src/theme/layout";
 import { Stack } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { initRealBleClient } from "../src/comms/BLE";
@@ -19,7 +20,7 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#05070a" }}>
           <ActivityIndicator size="large" color="#00f2ff" />
-          <Text style={{ color: "rgba(255,255,255,0.6)", marginTop: 16 }}>Initializing BLE...</Text>
+          <Text style={{ color: "rgba(255,255,255,0.6)", marginTop: spacing.lg }}>Initializing BLE...</Text>
         </View>
       </SafeAreaProvider>
     );

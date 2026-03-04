@@ -6,7 +6,7 @@ export type BleDeviceSummary = {
   id: string;
   name: string;
   rssi?: number;          // signal strength (optional)
-  batteryPct?: number;    // mock-only for now; real BLE usually needs a battery service/char
+  batteryPct?: number;
 };
 
 export type BleScanOptions = {

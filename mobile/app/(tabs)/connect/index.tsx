@@ -1,7 +1,9 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, Pressable, StyleSheet, ScrollView, ActivityIndicator, Alert, useWindowDimensions, Platform } from "react-native";
+import { View, Text, Pressable, StyleSheet, ScrollView, ActivityIndicator, Alert, useWindowDimensions, Platform, PermissionsAndroid } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Location from "expo-location";
 import { getBleClient, setStoredDeviceId, type BleDeviceSummary } from "../../../src/comms/BLE";
+import { spacing, fontSizes, radii, tabBarHeight } from "../../../src/theme/layout";
 import { getWifiClient, type WifiNetworkSummary } from "../../../src/comms/WiFi";
 import { useComms } from "../../../src/context/CommsContext";
 
@@ -24,8 +26,7 @@ function formatWifiSignal(strength?: number): string {
 
 export default function Connect() {
   const comms = useComms();
-  const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
-  const panelWidth = Math.min(390, SCREEN_WIDTH - 32);
+  const insets = useSafeAreaInsets();
   const [bluetoothStatus, setBluetoothStatus] = useState<"disconnected" | "scanning" | "connected">("disconnected");
   const [devices, setDevices] = useState<BleDeviceSummary[]>([]);
   const [bleError, setBleError] = useState<string | null>(null);
@@ -52,10 +53,33 @@ export default function Connect() {
     };
   }, []);
 
+  const requestBluetoothPermission = useCallback(async (): Promise<boolean> => {
+    if (Platform.OS !== "android") return true;
+    const apiLevel = typeof Platform.Version === "number" ? Platform.Version : parseInt(String(Platform.Version), 10);
+    if (apiLevel >= 31) {
+      const result = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+        PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      ]);
+      const scanOk = result["android.permission.BLUETOOTH_SCAN"] === PermissionsAndroid.RESULTS.GRANTED;
+      const connectOk = result["android.permission.BLUETOOTH_CONNECT"] === PermissionsAndroid.RESULTS.GRANTED;
+      const locationOk = result["android.permission.ACCESS_FINE_LOCATION"] === PermissionsAndroid.RESULTS.GRANTED;
+      return scanOk && connectOk && locationOk;
+    }
+    const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+    return granted === PermissionsAndroid.RESULTS.GRANTED;
+  }, []);
+
   const handleScan = useCallback(async () => {
     setBleError(null);
     setBluetoothStatus("scanning");
     try {
+      const granted = await requestBluetoothPermission();
+      if (!granted) {
+        setBleError("Bluetooth and Location permissions are required to scan for devices.");
+        return;
+      }
       const client = getBleClient();
       const list = await client.scan({ timeoutMs: SCAN_TIMEOUT_MS });
       setDevices(list);
@@ -64,7 +88,7 @@ export default function Connect() {
     } finally {
       setBluetoothStatus("disconnected");
     }
-  }, []);
+  }, [requestBluetoothPermission]);
 
   const handleConnect = useCallback(async (deviceId: string) => {
     setBleError(null);
@@ -185,10 +209,24 @@ export default function Connect() {
   })();
   const isWifiConnected = connectedWifiId != null;
 
+  const contentTop = insets.top + spacing.lg;
+  const contentBottom = insets.bottom + (tabBarHeight ?? 56) + spacing.xl;
+
   return (
     <View style={styles.root}>
-      <View style={[styles.panel, { width: panelWidth, maxHeight: SCREEN_HEIGHT - 32 }]}>
-        <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={[
+          styles.scrollContent,
+          {
+            paddingTop: contentTop,
+            paddingBottom: contentBottom,
+            paddingHorizontal: spacing.xxl,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.content}>
           <View style={styles.header}>
             <Text style={styles.title}>Connection</Text>
             <Text style={styles.subtitle}>Connect to drone via Bluetooth or WiFi</Text>
@@ -235,14 +273,16 @@ export default function Connect() {
 
             <View style={styles.deviceList}>
               <Text style={styles.label}>Available Devices</Text>
-              {devices.length === 0 && !bluetoothStatus && (
+              {devices.length === 0 && bluetoothStatus !== "scanning" && (
                 <Text style={styles.hint}>Tap “Scan for Devices” to find your drone.</Text>
               )}
               {devices.map((d) => (
                 <View key={d.id} style={styles.deviceItem}>
                   <View style={styles.deviceInfo}>
-                    <Text style={styles.deviceName}>{d.name || "Unknown"}</Text>
-                    <Text style={styles.deviceDetails}>
+                    <Text style={styles.deviceName} numberOfLines={1} ellipsizeMode="tail">
+                      {d.name || "Unknown"}
+                    </Text>
+                    <Text style={styles.deviceDetails} numberOfLines={1}>
                       Signal: {formatRssi(d.rssi)}
                       {d.batteryPct != null ? ` • Battery: ${d.batteryPct}%` : ""}
                     </Text>
@@ -301,7 +341,7 @@ export default function Connect() {
             </Pressable>
 
             {isWifiConnected && (
-              <View style={[styles.deviceItem, { marginBottom: 12 }]}>
+              <View style={[styles.deviceItem, { marginBottom: spacing.md }]}>
                 <View style={styles.deviceInfo}>
                   <Text style={styles.label}>Current Network</Text>
                   <Text style={styles.deviceName}>{connectedWifiId}</Text>
@@ -319,8 +359,10 @@ export default function Connect() {
               {wifiNetworks.map((n) => (
                 <View key={n.id} style={styles.deviceItem}>
                   <View style={styles.deviceInfo}>
-                    <Text style={styles.deviceName}>{n.ssid}</Text>
-                    <Text style={styles.deviceDetails}>
+                    <Text style={styles.deviceName} numberOfLines={1} ellipsizeMode="tail">
+                      {n.ssid}
+                    </Text>
+                    <Text style={styles.deviceDetails} numberOfLines={1}>
                       Signal: {formatWifiSignal(n.signalStrength)}
                       {n.secured ? " • Secured" : ""}
                     </Text>
@@ -338,68 +380,68 @@ export default function Connect() {
               ))}
             </View>
           </View>
-                </ScrollView>
-            </View>
         </View>
-    );
+      </ScrollView>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    root: { flex: 1, backgroundColor: "#05070a", alignItems: "center", justifyContent: "center" },
-    panel: {
-        minWidth: 320,
-        maxWidth: 390,
-        borderRadius: 40,
-        overflow: "hidden",
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.1)",
-        backgroundColor: "#0b1020",
-    },
+    root: { flex: 1, backgroundColor: "#05070a" },
     scrollView: {
         flex: 1,
+        width: "100%",
     },
     scrollContent: {
-        paddingTop: 60,
-        paddingHorizontal: 32,
-        paddingBottom: 100,
+        flexGrow: 1,
+        width: "100%",
+        maxWidth: 480,
+        alignSelf: "center",
+    },
+    content: {
+        width: "100%",
     },
     header: {
-        marginBottom: 40,
+        marginBottom: spacing.xxxl,
     },
     title: {
-        fontSize: 24,
+        fontSize: fontSizes.xxl,
         fontWeight: "800",
         color: "white",
         letterSpacing: 1,
     },
     subtitle: {
-        fontSize: 12,
+        fontSize: fontSizes.sm,
         color: "rgba(255,255,255,0.4)",
         letterSpacing: 1,
-        marginTop: 4,
+        marginTop: spacing.xs,
     },
     section: {
-        marginBottom: 40,
+        marginBottom: spacing.xxxl,
     },
     sectionHeader: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 16,
+        marginBottom: spacing.lg,
+        gap: spacing.md,
     },
     sectionTitle: {
-        fontSize: 16,
+        fontSize: fontSizes.lg,
         fontWeight: "700",
         color: "white",
         letterSpacing: 1,
+        flex: 1,
+        minWidth: 0,
     },
     statusBadge: {
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 12,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.sm - 2,
+        borderRadius: radii.sm,
         backgroundColor: "rgba(255,255,255,0.05)",
         borderWidth: 1,
         borderColor: "rgba(255,255,255,0.1)",
+        flexShrink: 0,
     },
     statusConnected: {
         borderColor: "rgba(0,242,255,0.5)",
@@ -411,20 +453,20 @@ const styles = StyleSheet.create({
         color: "rgba(255,255,255,0.6)",
         letterSpacing: 1,
     },
-    label: { fontSize: 10, letterSpacing: 2, color: "rgba(255,255,255,0.4)", marginBottom: 12, marginTop: 16 },
-    hint: { fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 12 },
+    label: { fontSize: fontSizes.xs, letterSpacing: 2, color: "rgba(255,255,255,0.4)", marginBottom: spacing.md, marginTop: spacing.lg },
+    hint: { fontSize: fontSizes.sm, color: "rgba(255,255,255,0.35)", marginBottom: spacing.md },
     errorBox: {
-      padding: 12,
-      borderRadius: 12,
+      padding: spacing.md,
+      borderRadius: radii.sm,
       backgroundColor: "rgba(255,80,80,0.15)",
       borderWidth: 1,
       borderColor: "rgba(255,80,80,0.4)",
-      marginBottom: 16,
+      marginBottom: spacing.lg,
     },
-    errorText: { fontSize: 12, color: "rgba(255,200,200,0.9)" },
+    errorText: { fontSize: fontSizes.sm, color: "rgba(255,200,200,0.9)" },
     btn: {
-        height: 80,
-        borderRadius: 24,
+        minHeight: 72,
+        borderRadius: radii.lg,
         borderWidth: 1,
         borderColor: "rgba(255,255,255,0.08)",
         backgroundColor: "rgba(255,255,255,0.03)",
@@ -436,36 +478,38 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(255,255,255,0.05)",
     },
     btnSmall: {
-        height: 50,
-        paddingHorizontal: 20,
+        minHeight: 44,
+        paddingHorizontal: spacing.xl,
+        flexShrink: 0,
     },
-    btnLabel: { fontSize: 12, fontWeight: "800", letterSpacing: 2, color: "rgba(255,255,255,0.7)" },
+    btnLabel: { fontSize: fontSizes.sm, fontWeight: "800", letterSpacing: 2, color: "rgba(255,255,255,0.7)" },
     deviceList: {
-        marginTop: 20,
+        marginTop: spacing.xl,
     },
     deviceItem: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: 16,
-        borderRadius: 16,
+        padding: spacing.lg,
+        borderRadius: radii.md,
         borderWidth: 1,
         borderColor: "rgba(255,255,255,0.08)",
         backgroundColor: "rgba(255,255,255,0.02)",
-        marginBottom: 12,
+        marginBottom: spacing.md,
     },
     deviceInfo: {
         flex: 1,
-        marginRight: 12,
+        minWidth: 0,
+        marginRight: spacing.md,
     },
     deviceName: {
-        fontSize: 14,
+        fontSize: fontSizes.md,
         fontWeight: "600",
         color: "white",
-        marginBottom: 4,
+        marginBottom: spacing.xs,
     },
     deviceDetails: {
-        fontSize: 10,
+        fontSize: fontSizes.xs,
         color: "rgba(255,255,255,0.4)",
         letterSpacing: 0.5,
     },
