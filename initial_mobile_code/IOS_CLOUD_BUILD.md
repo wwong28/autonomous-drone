@@ -52,7 +52,7 @@ eas build:configure
 - Choose **All** (or just **iOS**).
 - If asked to create an EAS project, say **Yes**. This links this app to your Expo account.
 
-You already have an `eas.json` in this project. You can keep it as is; it’s set up for iOS with real BLE (`EXPO_PUBLIC_BLE_MOCK=0`).
+You already have an `eas.json` in this project. You can keep it as is; it’s set up for iOS with real BLE.
 
 ---
 
@@ -94,7 +94,7 @@ eas build --platform ios --profile development
 - **production** – For App Store (requires paid Apple Developer Program). Use:  
   `eas build --platform ios --profile production`
 
-All of these have `EXPO_PUBLIC_BLE_MOCK=0` so BLE is real.
+All profiles use real BLE (no mocks).
 
 ---
 

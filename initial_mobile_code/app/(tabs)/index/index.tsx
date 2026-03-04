@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { View, Text, Pressable, StyleSheet, useWindowDimensions } from "react-native";
+import { View, Text, Pressable, StyleSheet, useWindowDimensions, Alert } from "react-native";
 import { useComms } from "../../../src/context/CommsContext";
 import type { Telemetry } from "../../../src/protocol/types";
 
@@ -100,7 +100,14 @@ export default function Index() {
 
                     <Pressable
                         style={[styles.btn, { opacity: tel.link === "SECURE_LINK" ? 0.6 : 1 }]}
-                        onPress={() => (tel.link === "SECURE_LINK" ? comms.disconnect() : comms.connect())}
+                        onPress={async () => {
+                            try {
+                                if (tel.link === "SECURE_LINK") await comms.disconnect();
+                                else await comms.connect();
+                            } catch (e) {
+                                Alert.alert("Connection", e instanceof Error ? e.message : "Connection failed");
+                            }
+                        }}
                     >
                         <Text style={styles.btnLabel}>
                             {tel.link === "SECURE_LINK" ? "Disconnect" : "Connect"}

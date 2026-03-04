@@ -25,7 +25,7 @@ You need a **development build** (not Expo Go) so the real BLE stack is used.
      cd initial_mobile_code
      npx eas build --platform ios --profile development
      ```
-   - Set `EXPO_PUBLIC_BLE_MOCK=0` in your EAS env or app config for that profile, then install the build and run. Scan and connect to **DroneBLE**.
+   - Install the build and run. Scan and connect to **DroneBLE**.
 
 ### UUIDs (must match)
 
@@ -105,4 +105,4 @@ To support the mobile app as implemented:
 | Notify | Base64(telemetry string) | Encode telemetry string → Base64; notify |
 | Device name | Shows “DroneBLE” in list | `ble_svc_gap_device_name_set("DroneBLE")` ✓ |
 
-Once the ESP32 accepts variable-length writes and sends string telemetry (with the same encoding as the app), you can run the app with **EXPO_PUBLIC_BLE_MOCK=0**, scan, connect to **DroneBLE**, and then send commands and receive telemetry for real.
+Once the ESP32 accepts variable-length writes and sends string telemetry (with the same encoding as the app), you can run the app, scan, connect to **DroneBLE**, and send commands and receive telemetry.

@@ -8,26 +8,17 @@
       "distribution": "internal",
       "ios": {
         "simulator": false
-      },
-      "env": {
-        "EXPO_PUBLIC_BLE_MOCK": "0"
       }
     },
     "preview": {
       "distribution": "internal",
       "ios": {
         "simulator": false
-      },
-      "env": {
-        "EXPO_PUBLIC_BLE_MOCK": "0"
       }
     },
     "production": {
       "ios": {
         "simulator": false
-      },
-      "env": {
-        "EXPO_PUBLIC_BLE_MOCK": "0"
       }
     }
   },

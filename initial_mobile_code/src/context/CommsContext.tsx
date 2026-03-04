@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useMemo } from "react";
-import { createMockComms } from "../comms/mock";
+import { createBleComms } from "../comms/ble-comms";
 import type { DroneComms } from "../comms/comms";
 
 const CommsContext = createContext<DroneComms | null>(null);
 
 export function CommsProvider({ children }: { children: React.ReactNode }) {
-  const comms = useMemo(() => createMockComms(), []);
+  const comms = useMemo(() => createBleComms(), []);
   return <CommsContext.Provider value={comms}>{children}</CommsContext.Provider>;
 }
 

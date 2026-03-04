@@ -1,24 +1,29 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { View, Text, ActivityIndicator } from "react-native";
 import { Stack } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { initRealBleClient } from "../src/comms/BLE";
 import { CommsProvider } from "../src/context/CommsContext";
 
-// Use real BLE in dev/production builds when EXPO_PUBLIC_BLE_MOCK=0
-const useRealBle =
-  (typeof globalThis !== "undefined" &&
-    (globalThis as any).process?.env?.EXPO_PUBLIC_BLE_MOCK?.toString().toLowerCase() === "0") ||
-  (typeof globalThis !== "undefined" &&
-    (globalThis as any).process?.env?.EXPO_PUBLIC_BLE_MOCK?.toString().toLowerCase() === "false");
-
 export default function RootLayout() {
+  const [bleReady, setBleReady] = useState(false);
+
   useEffect(() => {
-    if (useRealBle) {
-      initRealBleClient().catch(() => {
-        // In Expo Go this will fail (native module not available); ignore.
-      });
-    }
+    initRealBleClient()
+      .then(() => setBleReady(true))
+      .catch(() => setBleReady(true)); // Still render on failure (e.g. Expo Go)
   }, []);
+
+  if (!bleReady) {
+    return (
+      <SafeAreaProvider>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#05070a" }}>
+          <ActivityIndicator size="large" color="#00f2ff" />
+          <Text style={{ color: "rgba(255,255,255,0.6)", marginTop: 16 }}>Initializing BLE...</Text>
+        </View>
+      </SafeAreaProvider>
+    );
+  }
 
   return (
     <SafeAreaProvider>

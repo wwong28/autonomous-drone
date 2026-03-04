@@ -1,8 +1,9 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView, ActivityIndicator, Alert, useWindowDimensions, Platform } from "react-native";
 import * as Location from "expo-location";
-import { getBleClient, type BleDeviceSummary } from "../../../src/comms/BLE";
+import { getBleClient, setStoredDeviceId, type BleDeviceSummary } from "../../../src/comms/BLE";
 import { getWifiClient, type WifiNetworkSummary } from "../../../src/comms/WiFi";
+import { useComms } from "../../../src/context/CommsContext";
 
 const SCAN_TIMEOUT_MS = 5000;
 const WIFI_SCAN_TIMEOUT_MS = 2500;
@@ -22,6 +23,7 @@ function formatWifiSignal(strength?: number): string {
 }
 
 export default function Connect() {
+  const comms = useComms();
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
   const panelWidth = Math.min(390, SCREEN_WIDTH - 32);
   const [bluetoothStatus, setBluetoothStatus] = useState<"disconnected" | "scanning" | "connected">("disconnected");
@@ -69,6 +71,7 @@ export default function Connect() {
     try {
       const client = getBleClient();
       await client.connect(deviceId);
+      setStoredDeviceId(deviceId);
       setBluetoothStatus("connected");
     } catch (e) {
       setBleError(e instanceof Error ? e.message : "Connection failed");
@@ -79,13 +82,12 @@ export default function Connect() {
   const handleDisconnect = useCallback(async () => {
     setBleError(null);
     try {
-      const client = getBleClient();
-      await client.disconnect();
+      await comms.disconnect();
       setBluetoothStatus("disconnected");
     } catch (e) {
       setBleError(e instanceof Error ? e.message : "Disconnect failed");
     }
-  }, []);
+  }, [comms]);
 
   const handleWifiScan = useCallback(async () => {
     setWifiError(null);

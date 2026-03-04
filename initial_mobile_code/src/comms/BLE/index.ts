@@ -1,40 +1,30 @@
-// initial_mobile_code/src/comms/ble/index.ts
+// initial_mobile_code/src/comms/BLE/index.ts
 
 import type { DroneBleClient } from "./types.ts";
-import { MockDroneBleClient } from "./ble.mock";
-
-// Expo automatically inlines EXPO_PUBLIC_ variables at build time,
-// so we access it via globalThis to avoid needing Node types.
-const env =
-  (globalThis as any).process?.env?.EXPO_PUBLIC_BLE_MOCK ?? "1";
-
-const useMock = env.toString().toLowerCase() === "1" ||
-                env.toString().toLowerCase() === "true";
 
 let clientSingleton: DroneBleClient | null = null;
 
 export function getBleClient(): DroneBleClient {
   if (clientSingleton) return clientSingleton;
-
-  if (useMock) {
-    clientSingleton = new MockDroneBleClient();
-    return clientSingleton;
-  }
-
-  // Real BLE must be loaded lazily to avoid Expo Go bundling native modules.
   throw new Error(
-    "Real BLE is not available in this build. Use a dev build + set EXPO_PUBLIC_BLE_MOCK=0."
+    "BLE not initialized. Call initRealBleClient() at app startup."
   );
 }
 
-/**
- * Optional helper for later:
- * In a dev build, you can call this once at startup to swap to real BLE.
- */
 export async function initRealBleClient(): Promise<void> {
-  // Dynamic import so Expo Go doesn't include the native module.
   const mod = await import("./ble.real");
   clientSingleton = new mod.RealDroneBleClient();
+}
+
+// Store for reconnect (when Index Connect button is pressed)
+let storedDeviceId: string | null = null;
+
+export function setStoredDeviceId(id: string | null): void {
+  storedDeviceId = id;
+}
+
+export function getStoredDeviceId(): string | null {
+  return storedDeviceId;
 }
 
 export * from "./types";
