@@ -91,16 +91,16 @@ Photographs of the prototype:
 ## App Screenshots
 
 ### Connect Screen
-![Drone connect screen](./pictures_for_draft_designd_document/app_connect.jpg) [file:14]
+![Connect screen](./"pictures for draft design documents"/app_connect.jpg)[file:14]
 
 ### Home Screen
-![Drone home screen](./images/app_home.jpg) [file:12]
+![Home screen](./"pictures for draft design documents"/app_home.jpg)[file:12]
 
 ### Manual Control
-![Drone control pad](./images/app_control.jpg) [file:13]
+![Control screen](./"pictures for draft design documents"/app_control.jpg)[file:13]
 
 ### Live Video Feed
-![Drone video stream](./images/app_video.jpg) [file:11]
+![Video screen](./"pictures for draft design documents"/app_video.jpg)[file:11]
 
 
 **Testing**
