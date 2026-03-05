@@ -82,14 +82,29 @@ Through these design considerations, the system aims to provide a functional pro
 Our current prototype demonstrates that the core communication and motor control functions for the autonomous drone are functional. The mobile application successfully connects to the ESP32 controller via Bluetooth and enables the selective activation of individual propellers. These results, validated through structured testing, confirm that the basic design architecture is practical and provides a reliable foundation for future development. 
 
 **Functional Prototype**
+
 The functional prototype consists of an ESP32-based flight controller mounted on a quadcopter 3D-printed frame with four brushless motors and propellers powered by a LiPo battery system. The ESP32 serves as the central microcontroller, providing integrated Bluetooth connectivity and sufficient processing capability for current control functions and future autonomy features. Each motor is connected directly to a dedicated PWM-capable GPIO pin on the ESP32, with shared ground connections and separate power rails for logic and motor operation. 
 
 The ESP32 firmware initializes Bluetooth advertising and accepts connections from mobile devices, as verified in our firmware test plan. The mobile application scans for the ESP32, establishes a Bluetooth connection, and provides controls for individual motors. Our testing successfully demonstrated stable Bluetooth connectivity, including device discovery and reliable reconnection across multiple connect/disconnect cycles. 
 
 Photographs of the prototype: 
-figure out how to add pictures here 
+## App Screenshots
+
+### Connect Screen
+![Drone connect screen](./images/app_connect.jpg) [file:14]
+
+### Home Screen
+![Drone home screen](./images/app_home.jpg) [file:12]
+
+### Manual Control
+![Drone control pad](./images/app_control.jpg) [file:13]
+
+### Live Video Feed
+![Drone video stream](./images/app_video.jpg) [file:11]
+
 
 **Testing**
+
 Testing focused on verifying end-to-end functionality from mobile app input to physical motor response, following procedures outlined in our test plans. 
 1. Bluetooth Connectivity Tests
 Executed firmware connectivity tests BLE-01 and BLE-02, confirming the ESP32 advertises correctly and accepts connections within 10 seconds. Completed 5 connect/disconnect cycles with 100 % success rate and no firmware crashes. Mobile app tests BT-01 and BT-02 verified device discovery, connection status updates, and clean disconnection handling.
