@@ -251,9 +251,7 @@ We used the following tools and processes to coordinate work:
 - **GitHub** – The repository was used for all code, documentation, and design files.
 - **Discord** – Discord served as the main channel for day-to-day messaging, quick questions, meeting coordination, and sharing updates between synchronous meetings.
 
-### Appendix 3 – Test Plan & Results {#appendix-3---test-plan-&-results}
-
-# Autonomous Drone – Firmware Connectivity & Command Test Plan
+### Appendix 3 – Test Plan & Results {#appendix-3---test-plan-&-results} (Autonomous Drone – Firmware Connectivity & Command Test Plan)
 
 This appendix combines the **Test Plan** (developed prior to testing) and the **Test Report** (data, analysis, and conclusions), in line with standard engineering test documentation.
 
