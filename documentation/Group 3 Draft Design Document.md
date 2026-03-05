@@ -25,6 +25,7 @@ Group 3 Draft Design Document
 ### Introduction {#introduction}
 
 **Need & Goal Statements**
+
 **Need Statement**
 
 Many independent content creators need dynamic video footage but do not have access to a second person to operate a camera or drone. For example, a travel vlogger walking through a city or a fitness instructor recording an outdoor workout often needs moving shots or aerial perspectives to make their videos more engaging. Current recording setups such as tripods provide only fixed camera angles, while most drones require a dedicated controller and experienced operator. As a result, individuals working alone struggle to capture professional-looking footage. There is a need for a drone system that can be easily controlled by a smartphone, allowing a single user to move the drone and record video simultaneously without requiring additional personnel.
@@ -37,9 +38,11 @@ Enabling smartphone-based directional control of the drone.
 Allowing users to record video while controlling the drone.
 Creating an intuitive control interface that requires minimal training.
 Providing a system that allows individual content creators to record themselves without a second operator.
+
 **Personas**
 
 **Research into existing designs**
+
 Several existing drone and camera systems provide aerial recording capabilities, but many are not optimized for simple smartphone-based operation by a single individual.
 
 **DJI Mini Series**
@@ -50,7 +53,9 @@ The HoverAir X1 is a compact drone designed specifically for quick personal reco
 
 **Ryze Tello**
 The Ryze Tello drone is a small drone that can be controlled through a smartphone app using Wi-Fi communication. The app includes on-screen controls that allow users to move the drone in different directions. Although Tello demonstrates the feasibility of smartphone-based drone control, it is primarily designed as an educational or beginner drone. The camera quality and control responsiveness are limited compared to higher-end recording systems.
+
 **Sustainability Statement**
+
 The proposed drone system considers sustainability through efficient energy use, reusable components, and minimizing unnecessary hardware.
 
 The drone will operate using rechargeable batteries, allowing repeated use without generating disposable waste. Efficient electronic components and lightweight materials will help reduce power consumption and extend flight time. The design will also emphasize repairability and replaceable components, such as propellers, batteries, and camera modules. This approach extends the lifespan of the device and reduces electronic waste. Additionally, the system uses the user's existing smartphone as the control interface, eliminating the need for a separate controller and reducing additional hardware production.
