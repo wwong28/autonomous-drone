@@ -88,20 +88,26 @@ The functional prototype consists of an ESP32-based flight controller mounted on
 The ESP32 firmware initializes Bluetooth advertising and accepts connections from mobile devices, as verified in our firmware test plan. The mobile application scans for the ESP32, establishes a Bluetooth connection, and provides controls for individual motors. Our testing successfully demonstrated stable Bluetooth connectivity, including device discovery and reliable reconnection across multiple connect/disconnect cycles. 
 
 Photographs of the prototype: 
-## App Screenshots
+
+**App Screenshots**
 
 ### Connect Screen
-![Connect screen](./"pictures for draft design documents"/app_connect.jpg)[file:14]
+![Connect screen](./app_connect.png)
 
 ### Home Screen
-![Home screen](./"pictures for draft design documents"/app_home.jpg)[file:12]
+![Home screen](./app_home.png)
 
 ### Manual Control
-![Control screen](./"pictures for draft design documents"/app_control.jpg)[file:13]
+![Control screen](./app_control.png)
 
 ### Live Video Feed
-![Video screen](./"pictures for draft design documents"/app_video.jpg)[file:11]
+![Video screen](./app_video.png)
 
+## Prototype Photos
+
+![Drone prototype 1](./drone1.png)
+![Drone prototype 2](./drone2.png)
+![Drone prototype 3](./drone3.png)
 
 **Testing**
 
