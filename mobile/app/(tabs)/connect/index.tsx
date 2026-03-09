@@ -12,9 +12,8 @@ const WIFI_SCAN_TIMEOUT_MS = 2500;
 
 function formatRssi(rssi?: number): string {
   if (rssi == null) return "—";
-  if (rssi >= -50) return "Strong";
-  if (rssi >= -70) return "Good";
-  return "Weak";
+  const label = rssi >= -50 ? "Strong" : rssi >= -70 ? "Good" : "Weak";
+  return `${label} (${rssi} dBm)`;
 }
 
 function formatWifiSignal(strength?: number): string {
