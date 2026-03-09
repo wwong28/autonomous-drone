@@ -23,6 +23,8 @@ export class RealDroneBleClient implements DroneBleClient {
 
   async scan(options?: BleScanOptions): Promise<BleDeviceSummary[]> {
     const timeoutMs = options?.timeoutMs ?? 5000;
+    const minRssi = options?.minRssi ?? -90;
+    const showUnnamed = options?.showUnnamed ?? false;
     const found = new Map<string, BleDeviceSummary>();
 
     return new Promise((resolve, reject) => {
@@ -34,10 +36,11 @@ export class RealDroneBleClient implements DroneBleClient {
 
       const timer = setTimeout(() => {
         stop();
-        resolve(Array.from(found.values()));
+        const results = Array.from(found.values())
+          .sort((a, b) => (b.rssi ?? -Infinity) - (a.rssi ?? -Infinity));
+        resolve(results);
       }, timeoutMs);
 
-      // No filter: ESP32 may advertise 16-bit UUID (0x1811) only; name is "DroneBLE".
       this.manager.startDeviceScan(null, null, (error, device) => {
         if (error) {
           clearTimeout(timer);
@@ -47,8 +50,13 @@ export class RealDroneBleClient implements DroneBleClient {
         }
         if (!device) return;
 
-        const name = device.name ?? device.localName ?? "Unknown";
-        found.set(device.id, { id: device.id, name, rssi: device.rssi ?? undefined });
+        const name = device.name ?? device.localName ?? null;
+        if (!showUnnamed && (!name || name === "Unknown")) return;
+
+        const rssi = device.rssi ?? undefined;
+        if (rssi != null && rssi < minRssi) return;
+
+        found.set(device.id, { id: device.id, name: name ?? "Unknown", rssi });
       });
     });
   }

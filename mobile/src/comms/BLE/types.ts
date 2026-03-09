@@ -11,6 +11,8 @@ export type BleDeviceSummary = {
 
 export type BleScanOptions = {
   timeoutMs?: number;     // how long to scan before stopping
+  minRssi?: number;       // ignore devices weaker than this (e.g. -90)
+  showUnnamed?: boolean;  // if true, include devices with no name (default: false)
 };
 
 export type BleTelemetryCallback = (payload: string) => void;
