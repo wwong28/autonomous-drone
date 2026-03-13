@@ -160,18 +160,7 @@ Photographs of the prototype:
 
 **Testing**
 
-Testing focused on verifying end-to-end functionality from mobile app input to physical motor response, following procedures outlined in our test plans.
-
-1. Bluetooth Connectivity Tests
-   Executed firmware connectivity tests BLE-01 and BLE-02, confirming the ESP32 advertises correctly and accepts connections within 10 seconds. Completed 5 connect/disconnect cycles with 100 % success rate and no firmware crashes. Mobile app tests BT-01 and BT-02 verified device discovery, connection status updates, and clean disconnection handling.
-
-2. Motor Control Verification
-   Established a Bluetooth connection and sequentially activated each motor via the app interface. Each selection correctly actuated the corresponding physical motor, confirming proper wiring and command mapping. Response time from app input to motor activation was imperceptible, demonstrating adequate communication latency.
-
-3. Test Plan Implementation
-   Testing followed two documented plans: a comprehensive system-level plan covering mobile app and drone hardware integration, and a firmware-specific connectivity validation plan. This prototype phase prioritized Bluetooth connectivity and the validation of basic motor control. Subsequent phases will implement the remaining test cases, including flight control, telemetry display, and video streaming.
-
-All executed tests met success criteria, confirming reliable Bluetooth communication between the mobile application and ESP32 controller, and accurate motor actuation from app commands. These results validate the prototype's core functionality and establish a tested foundation for autonomous flight development.
+The manufacturing test plan in Appendix 3 defines how a fully assembled production drone will be evaluated before it is authorized to leave from manufacturing. Six tests (MECH-01 through FLT-01) cover visual mechanical inspection, safe power‑on and idle current behavior, PCB and sensor self‑tests, verification of the control link and command protocol, tethered motor mapping and spin‑up checks, and a sample hover/failsafe flight test. Together, these tests are designed to catch structural, electrical, and control issues early. They are also designed to demonstrate that every manufactured unit can power on safely, communicate correctly, spin the correct motors in the correct directions, and maintain a stable hover while following the documented failsafe policy.
 
 ## Appendix 1 – Problem Formulation {#appendix-1---problem-formulation}
 
@@ -586,5 +575,7 @@ This section defines a generic manufacturing and verification test plan for futu
 
 ---
 ### Appendix 4 – Review {#appendix-4---review}
+
+Looking back on what I worked on, especially around firmware and test development, one thing that went well was getting a reliable BLE link. From there my teammate was able to take my code and their existing motor control code, and combine them together so the team could see and hear the prototype respond in real time. I also established a reliable wifi connection but we did not need to use it yet. Where I would change my approach is in how I framed my iniial testing because my test plans were written for our inital prototype, rather than for the manufactured product we decided to create. If I were to do this again, I would focus more from the perspective of a production line engineer. I would start by designing manufacturing-level tests with clear pass/fail criteria, along with repeatable procedures, and consistent data logging. Having this shift in mindset would have made it easier to tie our day‑to‑day debugging directly to the long‑term reliability requirements of the finished drone. I also realized that our need statement, design objective, and goal statement were never really solidified in my mind, so when I worked on the design document and prepared for the test demo I wasn’t consistently checking that my tests and decisions traced back to those three statements and all connected. - Darin Rahm
 
 **One paragraph from each team member**
