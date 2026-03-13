@@ -4,6 +4,18 @@
 - ~5 minutes for questions
 - ~1 minute buffer time
 
+Need Statement
+
+There is a need to simplify the process of piloting a drone by removing the requirement for continuous manual control.
+
+Design Objective
+
+The objective of this project is to create a pilotless autonomous drone that is capable of following a user.
+
+Goal Statement
+
+The goal of this project is to design a pilotless autonomous drone that follows a user, enabling hands-free filming without continuous manual control.
+
 ### Person 1 — Problem, goal, and what you are demonstrating
 
 - short intro: what the project is and why it matters (need and goal statement)
