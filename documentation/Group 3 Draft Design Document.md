@@ -1,40 +1,41 @@
 Group 3 Draft Design Document
 
-### Executive Summary {#executive-summary}
+<a id="executive-summary"></a>
 
-### Table of Contents {#table-of-contents}
+### Executive Summary
 
-[Executive Summary](#executive-summary)
+<a id="table-of-contents"></a>
 
-[Table of Contents](#table-of-contents)
+### Table of Contents
 
-[Introduction](#introduction)
+- [Executive Summary](#executive-summary)
+- [Table of Contents](#table-of-contents)
+- [Introduction](#introduction)
+- [Design](#design)
+- [Evaluation](#evaluation)
+- [Appendix 1 – Problem Formulation](#appendix-1-problem-formulation)
+- [Appendix 2 – Planning](#appendix-2-planning)
+- [Appendix 3 – Test Plan & Results](#appendix-3-test-plan-results)
+- [Appendix 4 – Review](#appendix-4-review)
 
-[Design](#design)
+<a id="introduction"></a>
 
-[Evaluation](#evaluation)
+### Introduction
 
-[Appendix 1 – Problem Formulation](#appendix-1---problem-formulation)
-
-[Appendix 2 – Planning](#appendix-2---planning)
-
-[Appendix 3 – Test Plan & Results](#appendix-3---test-plan-&-results)
-
-[Appendix 4 – Review](#appendix-4---review)
-
-### Introduction {#introduction}
+**Need & Goal Statements**
 
 **Need Statement**
 
-There is a need to simplify the process of piloting a drone by removing the requirement for continuous manual control.
-
-**Design Objective**
-
-The objective of this project is to create a pilotless autonomous drone that is capable of following a user.
+Many independent content creators need dynamic video footage but do not have access to a second person to operate a camera or drone. For example, a travel vlogger walking through a city or a fitness instructor recording an outdoor workout often needs moving shots or aerial perspectives to make their videos more engaging. Current recording setups such as tripods provide only fixed camera angles, while most drones require a dedicated controller and experienced operator. As a result, individuals working alone struggle to capture professional-looking footage. There is a need for a drone system that can be easily controlled by a smartphone, allowing a single user to move the drone and record video simultaneously without requiring additional personnel.
 
 **Goal Statement**
 
-The goal of this project is to design a pilotless autonomous drone that follows a user, enabling hands-free filming without continuous manual control.
+The goal of this project is to design a drone that can be controlled directly from a smartphone using a simple directional interface. When a user presses a direction on the phone, the drone will move in the corresponding direction while capturing video.
+Key goals include:
+Enabling smartphone-based directional control of the drone.
+Allowing users to record video while controlling the drone.
+Creating an intuitive control interface that requires minimal training.
+Providing a system that allows individual content creators to record themselves without a second operator.
 
 **Personas**
 
@@ -89,7 +90,9 @@ The drone will operate using rechargeable batteries, allowing repeated use witho
 
 Through these design considerations, the system aims to provide a functional product while reducing environmental impact and encouraging long-term usability.
 
-### Design {#design}
+<a id="design"></a>
+
+### Design
 
 **Aesthetic Prototype**
 ![Drone cad](images/cad.png)
@@ -110,7 +113,7 @@ Maintenance was also considered during the design process. Key components such a
 ![alt text](images/state_transition_diagram.png)
 **Technology**
 
-The prototype system is built using an ESP32 microcontroller as the central computing platform. The ESP32 was selected because it integrates wireless communication capabilities, sufficient processing performance, and flexible GPIO interfaces for controlling external hardware. Its built-in Bluetooth functionality enables direct communication with the mobile application without requiring additional wireless modules.
+The prototype system is built using a custom PCB as the central computing platform. The custom PCB was selected because it integrates wireless communication capabilities, sufficient processing performance, and flexible GPIO interfaces for controlling external hardware. Its built-in Bluetooth functionality enables direct communication with the mobile application without requiring additional wireless modules.
 
 The propulsion system consists of four motors with propellers arranged in a quadcopter configuration. Each motor can be controlled independently, allowing the system to generate lift and directional movement through differential thrust. The drone is powered by a rechargeable lithium-polymer battery that provides a lightweight energy source suitable for aerial applications.
 
@@ -122,15 +125,17 @@ At this stage of development, the focus has been on validating communication and
 
 Future development may incorporate simulation tools to model flight dynamics and control algorithms before implementing them on the physical drone. Simulations could allow the team to test autonomous behaviors, sensor integration, and control stability in a controlled virtual environment before deploying those features on the hardware platform. This approach would reduce development risk and improve system reliability as more advanced functionality is added.
 
-### Evaluation {#evaluation}
+<a id="evaluation"></a>
 
-Our current prototype demonstrates that the core communication and motor control functions for the autonomous drone are functional. The mobile application successfully connects to the ESP32 controller via Bluetooth and enables the selective activation of individual propellers. These results, validated through structured testing, confirm that the basic design architecture is practical and provides a reliable foundation for future development.
+### Evaluation
+
+Our current prototype demonstrates that the core communication and motor control functions for the autonomous drone are functional. The mobile application successfully connects to the custom PCB controller via Bluetooth and enables the selective activation of individual propellers. These results, validated through structured testing, confirm that the basic design architecture is practical and provides a reliable foundation for future development.
 
 **Functional Prototype**
 
-The functional prototype consists of an ESP32-based flight controller mounted on a quadcopter 3D-printed frame with four brushless motors and propellers powered by a LiPo battery system. The ESP32 serves as the central microcontroller, providing integrated Bluetooth connectivity and sufficient processing capability for current control functions and future autonomy features. Each motor is connected directly to a dedicated PWM-capable GPIO pin on the ESP32, with shared ground connections and separate power rails for logic and motor operation.
+The functional prototype consists of a custom PCB-based flight controller mounted on a quadcopter 3D-printed frame with four brushless motors and propellers powered by a LiPo battery system. The custom PCB serves as the central microcontroller, providing integrated Bluetooth connectivity and sufficient processing capability for current control functions and future autonomy features. Each motor is connected directly to a dedicated PWM-capable GPIO pin on the custom PCB, with shared ground connections and separate power rails for logic and motor operation.
 
-The ESP32 firmware initializes Bluetooth advertising and accepts connections from mobile devices, as verified in our firmware test plan. The mobile application scans for the ESP32, establishes a Bluetooth connection, and provides controls for individual motors. Our testing successfully demonstrated stable Bluetooth connectivity, including device discovery and reliable reconnection across multiple connect/disconnect cycles.
+The custom PCB firmware initializes Bluetooth advertising and accepts connections from mobile devices, as verified in our firmware test plan. The mobile application scans for the custom PCB, establishes a Bluetooth connection, and provides controls for individual motors. Our testing successfully demonstrated stable Bluetooth connectivity, including device discovery and reliable reconnection across multiple connect/disconnect cycles.
 
 Photographs of the prototype:
 
@@ -162,7 +167,7 @@ Photographs of the prototype:
 
 The manufacturing test plan in Appendix 3 defines how a fully assembled production drone will be evaluated before it is authorized to leave from manufacturing. Six tests (MECH-01 through FLT-01) cover visual mechanical inspection, safe power‑on and idle current behavior, PCB and sensor self‑tests, verification of the control link and command protocol, tethered motor mapping and spin‑up checks, and a sample hover/failsafe flight test. Together, these tests are designed to catch structural, electrical, and control issues early. They are also designed to demonstrate that every manufactured unit can power on safely, communicate correctly, spin the correct motors in the correct directions, and maintain a stable hover while following the documented failsafe policy.
 
-## Appendix 1 – Problem Formulation {#appendix-1---problem-formulation}
+## Appendix 1 – Problem Formulation
 
 ### 1. Conceptualisations
 
@@ -218,7 +223,7 @@ Brainstorming centred on a few key concepts: the drone should not require piloti
 **4. What sensors and parts do we actually need?**
 
 - At first the need for many extra parts was not obvious.
-- An IMU was assumed necessary and expected to be available on the ESP32-based board.
+- An IMU was assumed necessary and expected to be available on the custom PCB.
 - Brainstorming raised the need for a barometer, magnetometer, and possibly a GPS unit.
 - Sensors became a major open question: what is strictly necessary for a first version vs what is needed for reliable autonomous behaviour and safety.
 
@@ -273,11 +278,9 @@ We have not finalised a tracking approach yet. Brainstorming focused on two main
 
 ---
 
-### 3. Morphological Charts
+<a id="appendix-2-planning"></a>
 
-To be added soon
-
-### Appendix 2 – Planning {#appendix-2---planning}
+### Appendix 2 – Planning
 
 #### Basic Plan / Gantt Chart
 
@@ -287,14 +290,14 @@ To be added soon
 
 The table below summarizes each team member's primary areas of contribution during the prototyping phase. Work was tracked and assigned through Jira across five sprints.
 
-| Team Member | Primary Contributions |
-| --- | --- |
-| **Ethan Liu** | Worked on mobile app development, including fixing BLE implementation bugs, restructuring the project for expo-router, fixing layout bugs and memory leaks, and setting up WiFi permissions and testing. Also contributed to hardware by 3D-printing the first drone frame. On the documentation side, drafted the systems architecture, set up Jira, created the project wiki, converted the design document to markdown, and researched cloud deployment options. |
-| **Cameron Dubois** | Designed the initial Figma mockups for the mobile app and set up the mobile project environment. Implemented Bluetooth connectivity on the mobile side and fixed display issues. |
-| **Darin Rahm** | Focused on drone firmware, including testing ESP32 Bluetooth and WiFi connectivity and implementing BLE commands for motor control. Also authored the test plan and created demonstration tests. |
-| **Stephen WB** | Worked across firmware and hardware — wrote the motor on/off and speed control functions, and integrated the ESP32 with new hardware components and the camera module. Set up the GitHub repository, created the initial LaTeX documents, and produced the digital system diagrams. |
-| **Winnie Wong** | Handled parts research and acquisition, documented component sizes for the final design, and researched campus drone flight guidelines. Designed a custom PCB schematic and created test cases. |
-| **Aya Galap** | Designed the updated CAD model for the drone shell and integrated mobile controls with the ESP32 hardware. Continously improving on drone CAD model and releasing new iterations with every change. |
+| Team Member                | Primary Contributions                                                                                                                                                                                                                                                               |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Ethan Liu**              | Worked on mobile app development, including fixing BLE implementation bugs, restructuring the project for expo-router, implementing manual controls, and setting up WiFi permissions and testing. Set up the Jira Kanban board and led the weekly scrums.                           |
+| **Cameron Dubois**         | Designed the initial Figma mockups for the mobile app and set up the mobile project environment. Implemented Bluetooth connectivity on the mobile side and fixed display issues.                                                                                                    |
+| **Darin Rahm**             | Focused on drone firmware, including testing ESP32 Bluetooth and WiFi connectivity and implementing BLE commands for motor control. Also authored the test plan and created demonstration tests.                                                                                    |
+| **Stephen Wend-Bell**      | Worked across firmware and hardware — wrote the motor on/off and speed control functions, and integrated the ESP32 with new hardware components and the camera module. Set up the GitHub repository, created the initial LaTeX documents, and produced the digital system diagrams. |
+| **Winnie Wong**            | Handled parts research and acquisition, documented component sizes for the final design, and researched campus drone flight guidelines. Designed a custom PCB schematic and created test cases.                                                                                     |
+| **Abhiram Sai Yegalapati** | Designed the updated CAD model for the drone shell and worked on wiring. Continously improving on drone CAD model and releasing new iterations with every change.                                                                                                                   |
 
 ---
 
@@ -306,7 +309,9 @@ We used the following tools and processes to coordinate work:
 - **GitHub** – The repository was used for all code, documentation, and design files.
 - **Discord** – Discord served as the main channel for day-to-day messaging, quick questions, meeting coordination, and sharing updates between synchronous meetings.
 
-### Appendix 3 – Manufacturing Test Plan & Results {#appendix-3---test-plan-&-results}
+<a id="appendix-3-test-plan-results"></a>
+
+### Appendix 3 – Manufacturing Test Plan & Results
 
 This section defines a generic manufacturing and verification test plan for future engineers who build or maintain production versions of the autonomous drone.
 
@@ -574,8 +579,27 @@ This section defines a generic manufacturing and verification test plan for futu
 - When the link is lost or degraded, the drone follows the documented failsafe policy (e.g., hover then land, or return-to-home then land) and does not exhibit uncontrolled motion or fly-away behavior.
 
 ---
-### Appendix 4 – Review {#appendix-4---review}
+
+<a id="appendix-4-review"></a>
+
+### Appendix 4 – Review
 
 Looking back on what I worked on, especially around firmware and test development, one thing that went well was getting a reliable BLE link. From there my teammate was able to take my code and their existing motor control code, and combine them together so the team could see and hear the prototype respond in real time. I also established a reliable wifi connection but we did not need to use it yet. Where I would change my approach is in how I framed my initial testing because my test plans were written for our inital prototype, rather than for the manufactured product we decided to create. If I were to do this again, I would focus more from the perspective of a production line engineer. I would start by designing manufacturing-level tests with clear pass/fail criteria, along with repeatable procedures, and consistent data logging. Having this shift in mindset would have made it easier to tie our day‑to‑day debugging directly to the long‑term reliability requirements of the finished drone. I also realized that our need statement, design objective, and goal statement were never really solidified in my mind, so when I worked on the design document and prepared for the test demo I wasn’t consistently checking that my tests and decisions traced back to those three statements and all connected. - Darin Rahm
 
 **One paragraph from each team member**
+
+**Ethan Liu**
+
+Our integration went well largely because we kept everything in a monorepo — mobile app, firmware, and documentation all in one place. That made it easier to coordinate changes, run tests across subsystems, and keep the design document aligned with the actual codebase. If I were to do it again, I would devote more time to the drone hardware side. Our effort was fairly evenly split between hardware and firmware, but in retrospect I would skew toward hardware earlier:soldering, mechanical assembly, and hands-on debugging of the physical drone to unblock firmware and flight testing sooner.
+
+**Stephen Wend-Bell**
+
+In this quarter we made a lot of good progress on our prototype and design. We went from nothing to having a working mobile app, working bluetooth connection to the drone, and all four motors spinning in response to the mobile app. One that that hindered my progress at least was my understanding of what was required of us in the class, I originally thought we were just building our design. It wasn't until like week 5 that I realized we're just building a prototype, and the main focus of the class is just the design. After we understood this, our work became more focused and we made more progress.
+
+**Cameron Dubois**
+
+The group as a whole has made significant progress in the first quarter. Most of my time was spent on the mobile application, and while we now have successful BLE communication established, I think we may have allocated too many resources to the app as opposed to the actual drone. With that foundation in place, I expect the second quarter to bring a greater focus on the hardware's flying and autonomous capabilities as they are the core focus of our design goals. I also don’t think I am alone in that it took some time to adjust to the course workflow and understand that the emphasis is on the design and documentation, which made for a slow start. Going into the next quarter, I want to shift my attention toward integrating the app with the drone's flight systems and contributing more on the hardware side.
+
+**Winnie Wong**
+
+I think one thing that went well during our project was the progress our team made on different parts of the drone. We were able to work on multiple components at the same time, such as the mobile app and the drone prototype, which helped us keep moving forward. Everyone in the group focused on different aspects of the project, and that division of work helped us make steady progress overall. If I were to do this again, I would try to better understand the main requirements earlier in the quarter, especially the design expectations and documentation that were required later on. Knowing that earlier would have helped me focus more on those parts of the project from the beginning and manage my time more effectively.
