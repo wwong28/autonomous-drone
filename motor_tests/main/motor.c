@@ -6,17 +6,17 @@
 
 static const char *TAG = "motor";
 
-// Hardware mapping
-static const int motor_pwm_gpios[4] = {4, 1, 8, 6}; // PWM pins IN1, IN3, IN5, IN7
-static const int motor_dir_gpios[4] = {3, 0, 7, 5}; // DIR pins IN2, IN4, IN6, IN8
+// Hardware mapping — Motor 1: GPIO6/7, Motor 2: GPIO8/9, Motor 3: GPIO0/1, Motor 4: GPIO4/5
+static const int motor_pwm_gpios[4] = {6, 8, 0, 4};
+static const int motor_dir_gpios[4] = {7, 9, 1, 5};
 static const ledc_channel_t ledc_channels[4] = {
     LEDC_CHANNEL_0, LEDC_CHANNEL_1, LEDC_CHANNEL_2, LEDC_CHANNEL_3};
 
 #define LEDC_MODE LEDC_LOW_SPEED_MODE
 #define LEDC_TIMER LEDC_TIMER_0
-#define LEDC_DUTY_RES LEDC_TIMER_13_BIT
-#define LEDC_FREQUENCY 4000
-#define MAX_DUTY 8191
+#define LEDC_DUTY_RES LEDC_TIMER_8_BIT
+#define LEDC_FREQUENCY 40000
+#define MAX_DUTY 255
 #define MIN_DUTY 0
 
 static int motor_duty[4] = {0, 0, 0, 0};
