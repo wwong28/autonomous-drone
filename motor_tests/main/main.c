@@ -11,38 +11,18 @@ void app_main(void)
 
     int speed_pct = 10;
 
+    int duty = (1023 * speed_pct) / 100;
+    for (int i = 0; i < 4; i++)
+        motor_set_speed((motor_t)i, duty);
+
     while (1)
     {
-        int duty = (255 * speed_pct) / 100;
-        ESP_LOGI(TAG, "=== Speed: %d%% (duty=%d) ===", speed_pct, duty);
-
         for (int i = 0; i < 4; i++)
-            motor_set_speed((motor_t)i, duty);
-
-        ESP_LOGI(TAG, "Motor 1 ON");
-        motor_set_on_off(MOTOR_1, true);
-        vTaskDelay(pdMS_TO_TICKS(4000));
-
-        ESP_LOGI(TAG, "Motor 2 ON");
-        motor_set_on_off(MOTOR_2, true);
-        vTaskDelay(pdMS_TO_TICKS(4000));
-
-        ESP_LOGI(TAG, "Motor 3 ON");
-        motor_set_on_off(MOTOR_3, true);
-        vTaskDelay(pdMS_TO_TICKS(4000));
-
-        ESP_LOGI(TAG, "Motor 4 ON");
-        motor_set_on_off(MOTOR_4, true);
-        vTaskDelay(pdMS_TO_TICKS(4000));
-
-        ESP_LOGI(TAG, "All ON — holding 2s");
-        vTaskDelay(pdMS_TO_TICKS(4000));
-
-        ESP_LOGI(TAG, "All OFF");
-        motors_stop_all();
-        vTaskDelay(pdMS_TO_TICKS(1000));
-
-        if (speed_pct < 60)
-            speed_pct += 5;
+        {
+            motors_stop_all();
+            motor_set_on_off((motor_t)i, true);
+            ESP_LOGI(TAG, "Motor %d ON", i + 1);
+            vTaskDelay(pdMS_TO_TICKS(1000));
+        }
     }
 }

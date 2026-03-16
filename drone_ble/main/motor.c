@@ -6,9 +6,9 @@
 
 static const char *TAG = "motor";
 
-// Hardware mapping
-static const int motor_pwm_gpios[4] = {6, 8, 0, 4}; // Motor 1-4 PWM pins
-static const int motor_dir_gpios[4] = {7, 9, 1, 5}; // Motor 1-4 DIR pins
+// Hardware mapping — Motor 1: GPIO13/12, Motor 2: GPIO14/27, Motor 3: GPIO26/25, Motor 4: GPIO33/32
+static const int motor_pwm_gpios[4] = {13, 14, 26, 33};
+static const int motor_dir_gpios[4] = {12, 27, 25, 32};
 static const ledc_channel_t ledc_channels[4] = {
     LEDC_CHANNEL_0, LEDC_CHANNEL_1, LEDC_CHANNEL_2, LEDC_CHANNEL_3};
 
