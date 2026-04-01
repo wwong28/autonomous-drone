@@ -25,19 +25,21 @@ function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             {state.routes.map((route, i) => {
                 const focused = state.index === i;
                 const label = TAB_LABELS[route.name] ?? route.name;
+                const isVideoTab = route.name === "video/index";
                 return (
                     <Pressable
                         key={route.key}
-                        style={styles.tab}
+                        style={[styles.tab, isVideoTab && styles.tabDisabled]}
                         onPress={() => {
+                            if (isVideoTab) return;
                             const event = navigation.emit({ type: "tabPress", target: route.key, canPreventDefault: true });
                             if (!focused && !event.defaultPrevented) {
                                 navigation.navigate(route.name);
                             }
                         }}
-                        onLongPress={() => navigation.emit({ type: "tabLongPress", target: route.key })}
+                        onLongPress={() => !isVideoTab && navigation.emit({ type: "tabLongPress", target: route.key })}
                     >
-                        <Text style={[styles.tabText, focused && styles.tabTextActive]}>
+                        <Text style={[styles.tabText, focused && styles.tabTextActive, isVideoTab && styles.tabTextDisabled]}>
                             {label}
                         </Text>
                     </Pressable>
@@ -93,6 +95,12 @@ const styles = StyleSheet.create({
     },
     tabTextActive: {
         color: "#00f2ff",
+    },
+    tabDisabled: {
+        opacity: 0.5,
+    },
+    tabTextDisabled: {
+        color: "rgba(255,255,255,0.3)",
     },
     estopButton: {
         position: "absolute",
