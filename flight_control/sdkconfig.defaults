@@ -1,0 +1,11 @@
+#targeting the ESP32-C3
+CONFIG_IDF_TARGET="esp32c3"
+
+#default I2C pins for the IMU connection
+#change these in menuconfig if your board uses different pins
+CONFIG_IMU_I2C_SDA_GPIO=4
+CONFIG_IMU_I2C_SCL_GPIO=5
+CONFIG_IMU_I2C_FREQ_HZ=400000
+
+#bigger stack so we don't overflow with all the printf calls
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=4096
