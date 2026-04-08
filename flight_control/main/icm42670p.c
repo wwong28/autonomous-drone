@@ -110,8 +110,9 @@ esp_err_t icm42670p_init(uint8_t gyro_config0,
         ESP_LOGE(TAG, "Soft reset write failed: %s", esp_err_to_name(ret));
         return ret;
     }
-    //give the reset time to finish
-    vTaskDelay(pdMS_TO_TICKS(2));
+    //the datasheet says 1ms typical but the device can take much longer
+    //after a cold power-on; 100ms is conservative and safe
+    vTaskDelay(pdMS_TO_TICKS(100));
 
     //read the WHO_AM_I register to make sure we're actually talking to an ICM-42670-P
     //if this fails, the sensor probably isn't wired correctly

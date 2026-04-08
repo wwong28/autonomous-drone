@@ -55,7 +55,7 @@ void app_main(void)
         }
 
         //A = accelerometer in g, G = gyroscope in degrees/sec, T = temperature
-        printf("A: %+7.3f %+7.3f %+7.3f  G: %+8.2f %+8.2f %+8.2f  T: %.1f C\n",
+        printf("A: x%+7.3f y%+7.3f z%+7.3f  G: x%+8.2f y%+8.2f z%+8.2f  T: %.1f C\n",
                d.accel_x_g,  d.accel_y_g,  d.accel_z_g,
                d.gyro_x_dps, d.gyro_y_dps, d.gyro_z_dps,
                d.temp_c);
