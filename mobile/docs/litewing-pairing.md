@@ -22,6 +22,7 @@ This document is for the **Expo / React Native app** in this folder. It describe
 - **Protocol:** **CRTP** (same family as ESP-Drone / Crazyflie).
 - **Carrier:** **UDP** between the phone (STA) and the drone (AP).
 - **Reference:** [ESP-Drone — Communication protocols](https://espressif-docs.readthedocs-hosted.com/projects/espressif-esp-drone/en/latest/communication.html) (CRTP, UDP port table).
+- **App:** CRTP framing and 8‑bit checksum for UDP are implemented in **`src/litewing/crtp.ts`** (see unit tests in `__tests__/crtp.test.ts`).
 
 ### IP and UDP ports (confirm before hardcoding)
 
