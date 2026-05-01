@@ -9,3 +9,7 @@
 - [Appendix 2 – Planning](#appendix-2-planning)
 - [Appendix 3 – Test Plan & Results](#appendix-3-test-plan-results)
 - [Appendix 4 – Review](#appendix-4-review)
+- [Appendix 5 – Spring Quarter Update](#appendix-5-review)
+- [Appendix 6 – Spring Quarter Planning](#appendix-6-review)
+- [Appendix 7 – Design Continuity](#appendix-7-review)
+  
